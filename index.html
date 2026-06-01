@@ -24,6 +24,7 @@
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 1.5rem;
+            gap: 1rem;
         }
         .logo h1 { font-size: 1.3rem; color: #ffd89b; }
         .logo p { font-size: 0.7rem; color: #e8d5b5; }
@@ -161,9 +162,13 @@
             font-size: 0.9rem;
         }
         .btn-wa { background: #25D366; }
+        .btn-fb { background: #1877f2; }
         .badge { background: #d9a13b20; padding: 4px 10px; border-radius: 2rem; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         
         footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 0.8rem; margin-top: 1rem; font-size: 0.7rem; }
+        .social-links { display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem; }
+        .social-links a { color: #e8d5b5; text-decoration: none; font-size: 1.2rem; transition: 0.2s; }
+        .social-links a:hover { color: #ffd89b; }
         
         .status-open { color: #2e7d32; background: #e8f5e9; display: inline-block; padding: 4px 10px; border-radius: 2rem; font-size: 0.75rem; }
         .status-closed { color: #c62828; background: #ffebee; display: inline-block; padding: 4px 10px; border-radius: 2rem; font-size: 0.75rem; }
@@ -189,18 +194,6 @@
         .hours-table td { padding: 5px 0; border-bottom: 1px solid #eee; font-size: 0.8rem; }
         .hours-table td:first-child { font-weight: 600; width: 80px; }
         .empty-state { text-align: center; padding: 1.5rem; color: #888; font-size: 0.8rem; }
-        
-        /* Skeleton loading */
-        .skeleton {
-            background: linear-gradient(90deg, #e8dccc 25%, #f5f0e8 50%, #e8dccc 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1s infinite;
-            border-radius: 0.5rem;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
         
         @media (max-width: 700px) {
             .navbar { flex-direction: column; text-align: center; gap: 0.8rem; }
@@ -276,7 +269,10 @@
                     <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
                     <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
                 </table>
-                <button id="whatsappBtn" class="primary btn-wa" style="margin-top:0.8rem;"><i class="fab fa-whatsapp"></i> Chat WA</button>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
+                    <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WA</button>
+                    <button id="facebookBtn" class="primary btn-fb" style="flex:1;"><i class="fab fa-facebook"></i> FB</button>
+                </div>
             </div>
         </div>
     </div>
@@ -286,7 +282,12 @@
         <div id="newsList"></div>
     </div>
     
-    <footer>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</footer>
+    <footer>
+        <p>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=61585289540901" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+        </div>
+    </footer>
 </div>
 
 <div id="adminModal" class="modal">
@@ -326,22 +327,23 @@
 
             <h4>Tambah Berita</h4>
             <input type="text" id="newNewsTitle" placeholder="Judul Berita">
-            <textarea id="newNewsContent" rows="2" placeholder="Isi berita..."></textarea>
+            <textarea id="newNewsContent" rows="3" placeholder="Isi berita / deskripsi lengkap..."></textarea>
             <input type="file" id="newNewsImage" accept="image/*">
             <button id="addNewsBtn" class="primary">Tambah Berita</button>
             <div id="adminNewsList"></div>
 
             <h4>Teks Jalan</h4>
             <input type="text" id="editRunningText">
-            <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%;">💾 SIMPAN SEMUA</button>
+            <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%; margin-top:1rem;">💾 SIMPAN SEMUA KE DRIVE</button>
         </div>
     </div>
 </div>
 
 <script>
     // ========== KONFIGURASI ==========
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzagAksZ_UJjrDFW8AB_9l0p4Y8z4Ww8LVO-xWELDIFZSFSOva1IbNx3BrIX-tivw2/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const ADMIN_PASSWORD = "hanif123$";
+    const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
@@ -351,7 +353,7 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // Kompres gambar sebelum upload (percepat loading)
+    // Kompres gambar - otomatis kecilin biar cepet
     function compressImage(file, maxWidth, callback) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -368,8 +370,8 @@
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                const quality = 0.7;
-                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Kompres 70% kualitas, hasilnya lebih kecil
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                 callback(dataUrl);
             };
             img.src = e.target.result;
@@ -394,45 +396,63 @@
                 if (!businessData.facilities) businessData.facilities = [];
                 if (!businessData.products) businessData.products = [];
                 if (!businessData.news) businessData.news = [];
-                if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat";
+                if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat | Free Ongkir Bragolan";
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
                 renderPublic();
+                showToast("✅ Data dimuat dari Drive");
+            } else {
+                // Data default jika kosong
+                businessData.news = [
+                    { id: "1", title: "🎉 SELAMAT DATANG!", content: "Selamat datang di Toko Batako UD Murah Meriah Bragolan. Kami siap melayani kebutuhan material Anda.", date: new Date().toISOString(), imageUrl: "" },
+                    { id: "2", title: "📢 PENGUMUMAN", content: "Jam operasional Senin-Sabtu 07.00-21.00. Minggu tutup.", date: new Date().toISOString(), imageUrl: "" }
+                ];
+                renderPublic();
             }
-        } catch(e) { console.error("Load error, pakai cache"); }
+        } catch(e) { 
+            console.error("Load error:", e);
+            showToast("⚠️ Gagal memuat data, pakai lokal");
+            renderPublic();
+        }
         updateJamOperasional();
     }
 
     async function saveToDrive() {
         let dataToSend = JSON.parse(JSON.stringify(businessData));
+        // Hapus base64 temporary sebelum kirim
         if(dataToSend.owner) delete dataToSend.owner.photoBase64;
         if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
         if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
         if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
         
         try {
+            showToast("💾 Menyimpan ke Drive...");
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: ADMIN_PASSWORD, data: dataToSend })
             });
-            showToast("✅ Data tersimpan");
-        } catch(e) { showToast("❌ Gagal simpan"); }
+            showToast("✅ Data tersimpan di Drive!");
+        } catch(e) { 
+            showToast("❌ Gagal simpan: " + e.message);
+        }
     }
 
     function renderPublic() {
-        // Owner
+        // Owner profile
         document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "Belum diisi";
         document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
-        if(businessData.owner.photoUrl) document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+        if(businessData.owner.photoUrl) {
+            document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+        }
         document.getElementById("runningTextMarquee").innerText = businessData.runningText;
         
         // Facilities
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
-        if(businessData.facilities.length === 0) {
+        if(!businessData.facilities || businessData.facilities.length === 0) {
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         } else {
             businessData.facilities.forEach(f => {
@@ -449,7 +469,7 @@
         // Products
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
-        if(businessData.products.length === 0) {
+        if(!businessData.products || businessData.products.length === 0) {
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         } else {
             businessData.products.forEach(p => {
@@ -467,7 +487,7 @@
         // News
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
-        if(businessData.news.length === 0) {
+        if(!businessData.news || businessData.news.length === 0) {
             newsDiv.innerHTML = "<div class='empty-state'>Belum ada berita</div>";
         } else {
             businessData.news.forEach(n => {
@@ -492,16 +512,23 @@
         const hari = namaHari[today.getDay()];
         const jam = today.getHours();
         let isOpen = false;
-        if(hari === "Senin") isOpen = (jam >= 7 && jam < 21);
+        if(hari === "Senin") isOpen = (jam >= 7 && (jam < 21 || (jam === 21 && today.getMinutes() <= 30)));
         else if(hari === "Minggu") isOpen = false;
         else isOpen = (jam >= 7 && jam < 21);
-        document.getElementById("todayStatus").innerHTML = isOpen ? `<span class="status-open"><i class="fas fa-store"></i> ${hari}: BUKA</span>` : `<span class="status-closed"><i class="fas fa-clock"></i> ${hari}: TUTUP</span>`;
+        const statusDiv = document.getElementById("todayStatus");
+        if(isOpen) {
+            statusDiv.innerHTML = `<span class="status-open"><i class="fas fa-store"></i> ${hari}: BUKA</span>`;
+        } else {
+            statusDiv.innerHTML = `<span class="status-closed"><i class="fas fa-clock"></i> ${hari}: TUTUP</span>`;
+        }
     }
     
-    // ========== ADMIN ==========
+    // ========== ADMIN PANEL ==========
     function renderAdminLists() {
+        // Facilities list
         const adminFacDiv = document.getElementById("adminFacilitiesList");
         adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
+        if(businessData.facilities.length === 0) adminFacDiv.innerHTML += "<em>Belum ada fasilitas</em>";
         businessData.facilities.forEach((f, i) => {
             adminFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:2px 8px;">Hapus</button></div>`;
         });
@@ -509,8 +536,10 @@
             btn.onclick = () => { businessData.facilities.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
         
+        // Products list
         const adminProdDiv = document.getElementById("adminProductsList");
         adminProdDiv.innerHTML = "<strong>Produk:</strong>";
+        if(businessData.products.length === 0) adminProdDiv.innerHTML += "<em>Belum ada produk</em>";
         businessData.products.forEach((p, i) => {
             adminProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:2px 8px;">Hapus</button></div>`;
         });
@@ -518,8 +547,10 @@
             btn.onclick = () => { businessData.products.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
         
+        // News list
         const adminNewsDiv = document.getElementById("adminNewsList");
         adminNewsDiv.innerHTML = "<strong>Berita:</strong>";
+        if(businessData.news.length === 0) adminNewsDiv.innerHTML += "<em>Belum ada berita</em>";
         businessData.news.forEach((n, i) => {
             adminNewsDiv.innerHTML += `<div class="admin-list-item">📰 ${escapeHtml(n.title)} <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:2px 8px; color:white;">Hapus</button></div>`;
         });
@@ -527,6 +558,7 @@
             btn.onclick = () => { businessData.news.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
         
+        // Form values
         document.getElementById("editOwnerName").value = businessData.owner.name || "";
         document.getElementById("editOwnerPhone").value = businessData.owner.phone || "";
         document.getElementById("editOwnerEmail").value = businessData.owner.email || "";
@@ -534,6 +566,7 @@
         document.getElementById("editRunningText").value = businessData.runningText || "";
     }
     
+    // Event Listeners
     document.getElementById("adminPanelBtn").onclick = () => document.getElementById("adminModal").style.display = "flex";
     document.getElementById("closeAdminModal").onclick = () => document.getElementById("adminModal").style.display = "none";
     document.getElementById("verifyAdminBtn").onclick = () => {
@@ -544,6 +577,7 @@
         } else { alert("Password salah!"); }
     };
     
+    // Tambah Fasilitas
     document.getElementById("addFacilityBtn").onclick = () => {
         let name = document.getElementById("newFacilityName").value.trim();
         let file = document.getElementById("newFacilityPhoto").files[0];
@@ -564,6 +598,7 @@
         }
     };
     
+    // Tambah Produk
     document.getElementById("addProductBtn").onclick = () => {
         let name = document.getElementById("newProductName").value.trim();
         let price = document.getElementById("newProductPrice").value;
@@ -587,6 +622,7 @@
         }
     };
     
+    // Tambah Berita
     document.getElementById("addNewsBtn").onclick = () => {
         let title = document.getElementById("newNewsTitle").value.trim();
         let content = document.getElementById("newNewsContent").value.trim();
@@ -601,7 +637,7 @@
                 document.getElementById("newNewsTitle").value = "";
                 document.getElementById("newNewsContent").value = "";
                 document.getElementById("newNewsImage").value = "";
-                showToast("✅ Berita ditambahkan");
+                showToast("✅ Berita ditambahkan dengan gambar");
             });
         } else {
             businessData.news = [newNews, ...businessData.news];
@@ -612,6 +648,7 @@
         }
     };
     
+    // Upload foto profil
     document.getElementById("uploadOwnerPhoto").onchange = (e) => {
         let file = e.target.files[0];
         if(file) {
@@ -624,6 +661,7 @@
         }
     };
     
+    // Simpan semua
     document.getElementById("saveAllDataBtn").onclick = () => {
         businessData.owner.name = document.getElementById("editOwnerName").value;
         businessData.owner.phone = document.getElementById("editOwnerPhone").value;
@@ -634,12 +672,16 @@
         showToast("✅ Semua data disimpan");
     };
     
+    // Tombol lain
     document.getElementById("copyPhoneBtn").onclick = () => { if(businessData.owner.phone) { navigator.clipboard.writeText(businessData.owner.phone); showToast("📋 Nomor tersalin"); } };
     document.getElementById("whatsappBtn").onclick = () => { let phone = businessData.owner.phone?.replace(/\D/g,''); if(phone) window.open(`https://wa.me/${phone}`); else alert("Nomor WA belum diisi"); };
+    document.getElementById("facebookBtn").onclick = () => { window.open(FB_URL, '_blank'); };
     
+    // Pencarian
     document.getElementById("searchBtn").onclick = () => {
         let kw = document.getElementById("searchInput").value.trim().toLowerCase();
         if(!kw) { location.reload(); return; }
+        
         const filteredFacilities = businessData.facilities.filter(f => f.name.toLowerCase().includes(kw));
         const filteredProducts = businessData.products.filter(p => p.name.toLowerCase().includes(kw) || (p.price && p.price.toLowerCase().includes(kw)));
         const filteredNews = businessData.news.filter(n => n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw));
@@ -669,6 +711,7 @@
     
     document.getElementById("resetSearchBtn").onclick = () => { location.reload(); };
     window.onclick = (e) => { if(e.target === document.getElementById("adminModal")) document.getElementById("adminModal").style.display = "none"; };
+    
     setInterval(updateJamOperasional, 60000);
     loadData();
 </script>
