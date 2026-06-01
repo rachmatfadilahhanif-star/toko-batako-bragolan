@@ -16,7 +16,7 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
         
-        /* LOADING SCREEN - Halaman loading sebelum konten muncul */
+        /* LOADING SCREEN - Tanpa tulisan Drive */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -251,6 +251,64 @@
             font-weight: 500;
         }
         
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white; max-width: 500px; width: 90%;
+            border-radius: 1.5rem; padding: 1.5rem;
+            max-height: 85vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; padding: 0 10px; }
+        input, textarea {
+            width: 100%; padding: 0.8rem; margin: 0.5rem 0;
+            border: 1px solid #ddd; border-radius: 1rem;
+            font-size: 0.95rem;
+        }
+        button.primary {
+            background: #5c3e2b; color: white; border: none;
+            padding: 0.8rem 1.2rem; border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-wa { background: #25D366; }
+        .btn-fb { background: #1877f2; }
+        .badge { background: #d9a13b20; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        
+        footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; }
+        .social-links { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.8rem; }
+        .social-links a { color: #e8d5b5; text-decoration: none; font-size: 1.3rem; transition: 0.2s; }
+        .social-links a:hover { color: #ffd89b; }
+        
+        .status-open { color: #2e7d32; background: #e8f5e9; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
+        .status-closed { color: #c62828; background: #ffebee; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
+        
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2e7d32; color: white; padding: 12px 20px;
+            border-radius: 2rem; z-index: 2100;
+            font-size: 0.9rem;
+        }
+        
+        .admin-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
+        .hours-table td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        .hours-table td:first-child { font-weight: 600; width: 90px; }
+        .empty-state { text-align: center; padding: 2rem; color: #888; font-size: 0.95rem; }
+        
         /* MODAL ZOOM GAMBAR */
         .zoom-modal {
             display: none;
@@ -324,64 +382,6 @@
         .news-detail-meta { font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
         .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; }
         
-        .modal {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            justify-content: center; align-items: center;
-            z-index: 2000;
-        }
-        .modal-content {
-            background: white; max-width: 500px; width: 90%;
-            border-radius: 1.5rem; padding: 1.5rem;
-            max-height: 85vh; overflow-y: auto;
-        }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-        .close-modal { font-size: 1.8rem; cursor: pointer; padding: 0 10px; }
-        input, textarea {
-            width: 100%; padding: 0.8rem; margin: 0.5rem 0;
-            border: 1px solid #ddd; border-radius: 1rem;
-            font-size: 0.95rem;
-        }
-        button.primary {
-            background: #5c3e2b; color: white; border: none;
-            padding: 0.8rem 1.2rem; border-radius: 2rem;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .btn-wa { background: #25D366; }
-        .btn-fb { background: #1877f2; }
-        .badge { background: #d9a13b20; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
-        
-        footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; }
-        .social-links { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.8rem; }
-        .social-links a { color: #e8d5b5; text-decoration: none; font-size: 1.3rem; transition: 0.2s; }
-        .social-links a:hover { color: #ffd89b; }
-        
-        .status-open { color: #2e7d32; background: #e8f5e9; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
-        .status-closed { color: #c62828; background: #ffebee; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
-        
-        .toast {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #2e7d32; color: white; padding: 12px 20px;
-            border-radius: 2rem; z-index: 2100;
-            font-size: 0.9rem;
-        }
-        
-        .admin-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
-        .hours-table td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .hours-table td:first-child { font-weight: 600; width: 90px; }
-        .empty-state { text-align: center; padding: 2rem; color: #888; font-size: 0.95rem; }
-        
         @media (max-width: 700px) {
             body { font-size: 16px; }
             .navbar { flex-direction: column; text-align: center; gap: 0.8rem; }
@@ -395,12 +395,12 @@
 </head>
 <body>
 
-<!-- LOADING SCREEN - Tampil pertama kali -->
+<!-- LOADING SCREEN - Aman tanpa tulisan Drive -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-spinner"></div>
-        <div class="loading-text">⏳ Memuat Data dari Google Drive...</div>
-        <div class="loading-subtext">Mohon tunggu sebentar, sedang mengambil informasi toko</div>
+        <div class="loading-text">⏳ Memuat data...</div>
+        <div class="loading-subtext">Mohon tunggu sebentar</div>
     </div>
 </div>
 
@@ -586,7 +586,7 @@
 
             <h4>Teks Jalan</h4>
             <input type="text" id="editRunningText">
-            <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%; margin-top:1rem;">💾 SIMPAN SEMUA KE DRIVE</button>
+            <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%; margin-top:1rem;">💾 SIMPAN SEMUA</button>
         </div>
     </div>
 </div>
@@ -605,7 +605,6 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // Tampilkan skeleton loading dulu, loading screen akan hilang setelah data siap
     function showSkeleton() {
         document.getElementById('loadingScreen').style.display = 'flex';
         document.getElementById('skeletonContent').style.display = 'none';
@@ -613,7 +612,6 @@
     }
     
     function hideLoadingAndShowContent() {
-        // Hilangkan loading screen dengan animasi
         const loadingScreen = document.getElementById('loadingScreen');
         loadingScreen.style.opacity = '0';
         setTimeout(() => {
@@ -622,7 +620,6 @@
         }, 500);
     }
     
-    // Kompres gambar
     function compressImage(file, maxWidth, callback) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -655,24 +652,18 @@
         setTimeout(() => toast.remove(), 2500);
     }
 
-    // FUNGSI ZOOM GAMBAR
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
-        if(imageUrl && imageUrl.startsWith('data:image')) {
+        if(imageUrl && (imageUrl.startsWith('data:image') || imageUrl.startsWith('http'))) {
             zoomImg.src = imageUrl;
-        } else if(imageUrl && imageUrl.startsWith('http')) {
-            zoomImg.src = imageUrl;
-        } else {
-            return;
+            modal.style.display = 'flex';
         }
-        modal.style.display = 'flex';
     }
     function closeZoomModal() {
         document.getElementById('zoomModal').style.display = 'none';
     }
     
-    // FUNGSI BACA BERITA DETAIL
     function openNewsDetail(news) {
         const modal = document.getElementById('newsDetailModal');
         document.getElementById('newsDetailImg').src = news.imageUrl || '';
@@ -688,7 +679,6 @@
     }
 
     async function loadData() {
-        // Tampilkan loading screen
         showSkeleton();
         
         try {
@@ -703,26 +693,24 @@
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
                 renderPublic();
                 hideLoadingAndShowContent();
-                showToast("✅ Data berhasil dimuat dari Google Drive");
+                showToast("✅ Data berhasil dimuat");
             } else {
-                // Data default jika kosong
                 businessData.news = [
-                    { id: "1", title: "🎉 SELAMAT DATANG!", content: "Selamat datang di Toko Batako UD Murah Meriah Bragolan. Kami siap melayani kebutuhan material bangunan Anda dengan harga terbaik dan kualitas terjamin.", date: new Date().toISOString(), imageUrl: "" },
-                    { id: "2", title: "📢 PENGUMUMAN", content: "Jam operasional Senin-Sabtu 07.00-21.00. Minggu tutup. Untuk pemesanan partai besar, silakan hubungi nomor WhatsApp yang tersedia.", date: new Date().toISOString(), imageUrl: "" }
+                    { id: "1", title: "🎉 SELAMAT DATANG!", content: "Selamat datang di Toko Batako UD Murah Meriah Bragolan. Kami siap melayani kebutuhan material bangunan Anda.", date: new Date().toISOString(), imageUrl: "" },
+                    { id: "2", title: "📢 PENGUMUMAN", content: "Jam operasional Senin-Sabtu 07.00-21.00. Minggu tutup.", date: new Date().toISOString(), imageUrl: "" }
                 ];
                 renderPublic();
                 hideLoadingAndShowContent();
-                showToast("⚠️ Data default dimuat (belum ada data di Drive)");
+                showToast("⚠️ Data default dimuat");
             }
         } catch(e) { 
             console.error("Load error:", e);
-            // Gunakan data default jika gagal
             businessData.news = [
-                { id: "1", title: "🎉 SELAMAT DATANG!", content: "Selamat datang di Toko Batako UD Murah Meriah Bragolan. Kami siap melayani kebutuhan material bangunan Anda.", date: new Date().toISOString(), imageUrl: "" }
+                { id: "1", title: "🎉 SELAMAT DATANG!", content: "Selamat datang di Toko Batako UD Murah Meriah Bragolan.", date: new Date().toISOString(), imageUrl: "" }
             ];
             renderPublic();
             hideLoadingAndShowContent();
-            showToast("⚠️ Gagal terhubung ke Drive, menggunakan data lokal");
+            showToast("⚠️ Menggunakan data lokal");
         }
         updateJamOperasional();
     }
@@ -735,21 +723,20 @@
         if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
         
         try {
-            showToast("💾 Menyimpan ke Drive...");
+            showToast("💾 Menyimpan data...");
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: ADMIN_PASSWORD, data: dataToSend })
             });
-            showToast("✅ Data tersimpan di Drive!");
+            showToast("✅ Data tersimpan");
         } catch(e) { 
             showToast("❌ Gagal simpan: " + e.message);
         }
     }
 
     function renderPublic() {
-        // Owner profile
         document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "Belum diisi";
         document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
@@ -761,7 +748,6 @@
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
-        // Facilities
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(!businessData.facilities || businessData.facilities.length === 0) {
@@ -780,7 +766,6 @@
             });
         }
         
-        // Products
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(!businessData.products || businessData.products.length === 0) {
@@ -800,7 +785,6 @@
             });
         }
         
-        // News - dengan klik untuk baca detail
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(!businessData.news || businessData.news.length === 0) {
@@ -843,7 +827,7 @@
         }
     }
     
-    // ========== ADMIN PANEL ==========
+    // ADMIN PANEL (sama seperti sebelumnya)
     function renderAdminLists() {
         const adminFacDiv = document.getElementById("adminFacilitiesList");
         adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
@@ -883,7 +867,6 @@
         document.getElementById("editRunningText").value = businessData.runningText || "";
     }
     
-    // Event Listeners
     document.getElementById("adminPanelBtn").onclick = () => document.getElementById("adminModal").style.display = "flex";
     document.getElementById("closeAdminModal").onclick = () => document.getElementById("adminModal").style.display = "none";
     document.getElementById("verifyAdminBtn").onclick = () => {
