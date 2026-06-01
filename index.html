@@ -18,9 +18,15 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes tapFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
         .animate-fade-up { animation: fadeInUp 0.5s ease forwards; }
         .container { max-width: 1280px; margin: 0 auto; padding: 1rem; }
         
+        /* Navbar - touch friendly */
         .navbar {
             background: #5c3e2b;
             border-radius: 1.5rem;
@@ -47,9 +53,11 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
             min-height: 44px;
+            min-width: 44px;
         }
         .btn-admin:active { transform: scale(0.96); background: #c4892a; }
         
+        /* Search Box - touch friendly */
         .search-container { margin-bottom: 1.5rem; }
         .search-box {
             display: flex;
@@ -92,6 +100,7 @@
         }
         marquee { color: #ffd89b; font-weight: 600; font-size: 0.95rem; }
         
+        /* Cards */
         .card {
             background: rgba(255,255,255,0.95);
             border-radius: 1.5rem;
@@ -106,6 +115,7 @@
             gap: 1.2rem; 
         }
         
+        /* Profile - touch friendly */
         .profile-wrapper { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; }
         .owner-photo {
             width: 100px;
@@ -115,13 +125,26 @@
             border: 4px solid #d9a13b;
             background: #e8dccc;
         }
-        .info-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; padding: 4px 0; }
+        .info-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin: 8px 0; 
+            flex-wrap: wrap;
+            padding: 4px 0;
+        }
         .info-icon {
-            width: 36px; height: 36px; background: #f0e4d0;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: #f0e4d0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
         }
         
+        /* Item Cards - touch friendly with tap feedback */
         .item-card {
             background: #fef8ef;
             border-radius: 1rem;
@@ -133,8 +156,13 @@
             display: flex;
             flex-direction: column;
             cursor: pointer;
+            -webkit-tap-highlight-color: rgba(217, 161, 59, 0.3);
         }
-        .item-card:active { transform: scale(0.98); background: #f9f0e2; transition: transform 0.05s; }
+        .item-card:active { 
+            transform: scale(0.98); 
+            background: #f9f0e2;
+            transition: transform 0.05s;
+        }
         .item-img {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -143,60 +171,17 @@
             margin-bottom: 0.8rem;
             background: #e8dccc;
         }
-        .item-name { font-weight: 600; font-size: 0.95rem; margin: 0.4rem 0 0.2rem; color: #2d2418; }
-        .item-price { color: #d9a13b; font-weight: bold; margin-top: 4px; font-size: 0.85rem; }
-        
-        /* NEWS CARD - LENGKAP DENGAN GAMBAR & DESKRIPSI */
-        .news-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-        .news-card {
-            background: #fef8ef;
-            border-radius: 1.2rem;
-            padding: 1.2rem;
-            border: 1px solid #f0e4d0;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-        .news-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .news-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 1rem;
-            background: #e8dccc;
-        }
-        .news-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #5c3e2b;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .news-title i {
-            color: #d9a13b;
-            font-size: 1.2rem;
-        }
-        .news-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.75rem;
-            color: #888;
-            border-bottom: 1px solid #f0e4d0;
-            padding-bottom: 0.5rem;
-        }
-        .news-content {
-            color: #4a3a2a;
-            line-height: 1.6;
+        .item-name {
+            font-weight: 600;
             font-size: 0.95rem;
+            margin: 0.4rem 0 0.2rem;
+            color: #2d2418;
+        }
+        .item-price { 
+            color: #d9a13b; 
+            font-weight: bold; 
+            margin-top: 4px;
+            font-size: 0.85rem;
         }
         .empty-state {
             text-align: center;
@@ -206,6 +191,7 @@
             border-radius: 1rem;
         }
         
+        /* Modal - touch friendly */
         .modal {
             display: none; position: fixed; top: 0; left: 0;
             width: 100%; height: 100%; background: rgba(0,0,0,0.8);
@@ -218,7 +204,17 @@
             max-height: 85vh; overflow-y: auto;
         }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-        .close-modal { font-size: 1.8rem; cursor: pointer; padding: 0 8px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+        .close-modal { 
+            font-size: 1.8rem; 
+            cursor: pointer; 
+            padding: 0 8px;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-modal:active { opacity: 0.6; }
         input, textarea {
             width: 100%; padding: 0.8rem; margin: 0.5rem 0;
             border: 1px solid #ddd; border-radius: 1rem;
@@ -235,6 +231,7 @@
         }
         button.primary:active { transform: scale(0.97); background: #3e2a1c; }
         .btn-wa { background: #25D366; }
+        .btn-wa:active { background: #1da15a; }
         
         .toast {
             position: fixed; bottom: 20px; right: 20px;
@@ -247,14 +244,30 @@
         .toast-error { background: #c62828; }
         .toast-info { background: #2c3e50; }
         
-        .badge { background: #d9a13b20; padding: 8px 14px; border-radius: 2rem; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; }
+        .badge { 
+            background: #d9a13b20; 
+            padding: 8px 14px; 
+            border-radius: 2rem; 
+            font-size: 0.85rem; 
+            cursor: pointer; 
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 40px;
+        }
         .badge:active { background: #d9a13b40; transform: scale(0.96); }
         
         footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 1rem; margin-top: 1rem; font-size: 0.8rem; }
         
         .status-open, .status-closed {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 8px 16px; border-radius: 2rem; font-size: 0.85rem; font-weight: bold; min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            min-height: 40px;
         }
         .status-open { color: #2e7d32; background: #e8f5e9; }
         .status-closed { color: #c62828; background: #ffebee; }
@@ -267,21 +280,33 @@
             .search-box button { flex: 1; }
             .grid-3 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; }
             .card { padding: 1rem; }
-            .news-image { height: 180px; }
-            .news-title { font-size: 1rem; }
+            .item-name { font-size: 0.9rem; }
         }
         
+        /* Tambahan untuk kenyamanan touch di HP */
         @media (max-width: 480px) {
-            .btn-admin, .badge, button.primary, .search-box button { min-height: 48px; }
-            .owner-photo { width: 90px; height: 90px; }
-            .item-card { padding: 0.8rem; }
-            .news-image { height: 150px; }
+            .btn-admin, .badge, button.primary, .search-box button {
+                min-height: 48px;
+            }
+            .info-row {
+                justify-content: center;
+            }
+            .owner-photo {
+                width: 90px;
+                height: 90px;
+            }
+            .item-card {
+                padding: 0.8rem;
+            }
         }
         
         .hours-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .hours-table td { padding: 10px 0; border-bottom: 1px solid #eee; }
         .hours-table td:first-child { font-weight: 600; width: 100px; }
-        .preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
+        .preview-img {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            border: 2px solid #d9a13b;
+        }
         .admin-list-item {
             display: flex;
             justify-content: space-between;
@@ -291,17 +316,15 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .admin-list-item button { min-height: 36px; padding: 6px 14px; }
-        .news-admin-item {
-            background: #f5f0e8;
-            border-radius: 0.8rem;
-            padding: 0.8rem;
-            margin-bottom: 0.8rem;
+        .admin-list-item button {
+            min-height: 36px;
+            padding: 6px 14px;
         }
-        .news-admin-title { font-weight: 700; color: #5c3e2b; }
-        .news-admin-content { font-size: 0.8rem; color: #666; margin: 4px 0; }
         
-        html { scroll-behavior: smooth; }
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body>
@@ -378,17 +401,14 @@
             </div>
         </div>
 
-        <!-- NEWS SECTION - LENGKAP DENGAN GAMBAR & DESKRIPSI -->
         <div class="card animate-fade-up">
             <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
-            <div id="newsList" class="news-container"></div>
+            <div id="newsDisplay" style="background:#fdf7ef; padding:1rem; border-radius:1rem;"></div>
         </div>
-        
         <footer>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</footer>
     </div>
 </div>
 
-<!-- MODAL ADMIN -->
 <div id="adminModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h2><i class="fas fa-crown"></i> Panel Admin</h2><span class="close-modal" id="closeAdminModal">&times;</span></div>
@@ -401,7 +421,6 @@
             <div style="background:#e8f5e9; padding:10px; border-radius:1rem; margin-bottom:1rem;">
                 <small><i class="fas fa-info-circle"></i> Upload foto lalu klik "Simpan Semua ke Drive"</small>
             </div>
-            
             <h4>Profil & Kontak</h4>
             <input type="text" id="editOwnerName" placeholder="Nama Pemilik">
             <input type="tel" id="editOwnerPhone" placeholder="No Telepon">
@@ -428,16 +447,8 @@
             </div>
             <div id="adminProductsList" style="margin:10px 0; max-height:200px; overflow:auto;"></div>
 
-            <h4>Tambah Berita (Lengkap dengan Gambar & Deskripsi)</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="text" id="newNewsTitle" placeholder="Judul Berita">
-                <textarea id="newNewsContent" rows="3" placeholder="Isi berita / deskripsi lengkap..."></textarea>
-                <input type="file" id="newNewsImage" accept="image/*">
-                <button id="addNewsBtn" class="primary">+ Tambah Berita</button>
-            </div>
-            <div id="adminNewsList" style="margin:10px 0; max-height:250px; overflow:auto;"></div>
-
-            <h4>Teks Jalan</h4>
+            <h4>Berita & Teks Jalan</h4>
+            <textarea id="editNews" rows="3" placeholder="Berita terbaru"></textarea>
             <input type="text" id="editRunningText" placeholder="Teks berjalan">
             <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%; margin-top:1rem;"><i class="fas fa-save"></i> Simpan Semua ke Drive</button>
         </div>
@@ -495,15 +506,11 @@
             { name: "Pasir Pasang", price: "Rp 180.000/m³", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Pasir+Pasang" },
             { name: "Semen Padang 40kg", price: "Rp 65.000/zak", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Semen+Padang" }
         ],
-        news: [
-            { id: "1", title: "🎉 PROMO AKHIR TAHUN!", content: "Diskon 10% untuk pembelian 1000 batako. Free ongkir area Bragolan. Periode: 1-31 Desember 2024. Jangan lewatkan kesempatan ini!", date: new Date().toISOString(), imageBase64: "", imageUrl: "" },
-            { id: "2", title: "🏭 PABRIK BUKA CABANG BARU", content: "Kami dengan bangga mengumumkan pembukaan cabang baru di daerah Bragolan Timur. Alamat: Jl. Raya Timur No. 123. Jam operasional sama dengan pusat. Kami siap melayani lebih banyak pelanggan!", date: new Date().toISOString(), imageBase64: "", imageUrl: "" },
-            { id: "3", title: "✅ KUALITAS TERJAMIN SNI", content: "Produk batako kami telah teruji kualitasnya dan mendapatkan sertifikasi SNI. Dijamin kuat, tahan lama, dan ramah lingkungan. Percayakan kebutuhan bangunan Anda pada kami!", date: new Date().toISOString(), imageBase64: "", imageUrl: "" }
-        ],
+        news: "🎉 PROMO AKHIR TAHUN! Diskon 10% untuk pembelian 1000 batako. Free ongkir area Bragolan.",
         runningText: "🏆 Batako Super Padat Kualitas Ekspor | Free Ongkir Bragolan | Partai Besar & Kecil"
     };
     
-    let originalFacilities = [], originalProducts = [], originalNews = [], searchActive = false;
+    let originalFacilities = [], originalProducts = [], searchActive = false;
 
     function showToast(msg, type = "success") {
         let toast = document.createElement('div');
@@ -530,35 +537,14 @@
             if(result.status === "success" && result.data) {
                 if(result.data.facilities?.length) businessData.facilities = result.data.facilities;
                 if(result.data.products?.length) businessData.products = result.data.products;
-                if(result.data.news?.length) businessData.news = result.data.news;
                 if(result.data.owner) businessData.owner = { ...businessData.owner, ...result.data.owner };
+                if(result.data.news) businessData.news = result.data.news;
                 if(result.data.runningText) businessData.runningText = result.data.runningText;
                 saveToLocalStorage();
                 showToast("✅ Data dari Drive dimuat!", "success");
                 renderPublic();
             }
         } catch(e) { console.log("Drive offline, pakai lokal"); }
-    }
-
-    function renderNews() {
-        const container = document.getElementById("newsList");
-        container.innerHTML = "";
-        if(!businessData.news || businessData.news.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-newspaper"></i> Belum ada berita</div>`;
-            return;
-        }
-        businessData.news.forEach(item => {
-            let div = document.createElement("div");
-            div.className = "news-card";
-            let imageUrl = item.imageUrl || item.imageBase64 || null;
-            div.innerHTML = `
-                ${imageUrl ? `<img src="${imageUrl}" class="news-image" onerror="this.style.display='none'">` : ''}
-                <div class="news-title"><i class="fas fa-bullhorn"></i> ${escapeHtml(item.title)}</div>
-                <div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(item.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                <div class="news-content">${escapeHtml(item.content)}</div>
-            `;
-            container.appendChild(div);
-        });
     }
 
     function renderItems(containerId, items, showPrice = false) {
@@ -594,9 +580,9 @@
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
         if(businessData.owner.photoUrl) document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
         document.getElementById("runningTextMarquee").innerText = businessData.runningText || "🏆 Batako Super Padat!";
+        document.getElementById("newsDisplay").innerHTML = `<i class="fas fa-bullhorn"></i> ${escapeHtml(businessData.news) || "Selamat datang!"}`;
         renderItems("facilitiesList", businessData.facilities, false);
         renderItems("productsList", businessData.products, true);
-        renderNews();
     }
     
     function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
@@ -606,8 +592,6 @@
         if(dataToSend.owner) delete dataToSend.owner.photoBase64;
         if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
         if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
-        if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
-        
         const payload = { action: "saveAll", passwordToken: ADMIN_PASSWORD, folderId: DRIVE_FOLDER_ID, data: dataToSend };
         try {
             await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -616,6 +600,7 @@
         } catch(e) { showToast("⚠️ Tersimpan di lokal", "info"); }
     }
     
+    // ========== EVENT LISTENERS ==========
     document.getElementById("adminPanelBtn").onclick = () => document.getElementById("adminModal").style.display = "flex";
     document.getElementById("closeAdminModal").onclick = () => document.getElementById("adminModal").style.display = "none";
     document.getElementById("verifyAdminBtn").onclick = () => {
@@ -635,7 +620,6 @@
         document.querySelectorAll(".delFac").forEach(btn => {
             btn.onclick = () => { businessData.facilities.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
-        
         const adminProdDiv = document.getElementById("adminProductsList");
         adminProdDiv.innerHTML = "<strong>Daftar Produk:</strong>";
         businessData.products.forEach((p, i) => {
@@ -644,30 +628,11 @@
         document.querySelectorAll(".delProd").forEach(btn => {
             btn.onclick = () => { businessData.products.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
-        
-        const adminNewsDiv = document.getElementById("adminNewsList");
-        adminNewsDiv.innerHTML = "<strong>Daftar Berita:</strong>";
-        if(businessData.news && businessData.news.length > 0) {
-            businessData.news.forEach((n, i) => {
-                adminNewsDiv.innerHTML += `
-                    <div class="news-admin-item">
-                        <div class="news-admin-title">📰 ${escapeHtml(n.title)}</div>
-                        <div class="news-admin-content">${escapeHtml(n.content.substring(0,80))}...</div>
-                        <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; margin-top:6px; color:white;">Hapus Berita</button>
-                    </div>
-                `;
-            });
-        } else {
-            adminNewsDiv.innerHTML += "<em>Belum ada berita</em>";
-        }
-        document.querySelectorAll(".delNews").forEach(btn => {
-            btn.onclick = () => { businessData.news.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
-        });
-        
         document.getElementById("editOwnerName").value = businessData.owner.name || "";
         document.getElementById("editOwnerPhone").value = businessData.owner.phone || "";
         document.getElementById("editOwnerEmail").value = businessData.owner.email || "";
         document.getElementById("editOwnerAddress").value = businessData.owner.address || "";
+        document.getElementById("editNews").value = businessData.news || "";
         document.getElementById("editRunningText").value = businessData.runningText || "";
     }
     
@@ -716,40 +681,6 @@
         }
     };
     
-    document.getElementById("addNewsBtn").onclick = () => {
-        let title = document.getElementById("newNewsTitle").value.trim();
-        let content = document.getElementById("newNewsContent").value.trim();
-        let file = document.getElementById("newNewsImage").files[0];
-        if(!title) return alert("Judul berita harus diisi");
-        let newNews = {
-            id: "news_" + Date.now(),
-            title: title,
-            content: content || "",
-            date: new Date().toISOString(),
-            imageBase64: null,
-            imageUrl: ""
-        };
-        if(file) {
-            let reader = new FileReader();
-            reader.onload = (ev) => {
-                newNews.imageBase64 = ev.target.result;
-                businessData.news = [newNews, ...(businessData.news || [])];
-                renderAdminLists(); saveToDrive(); renderPublic();
-                document.getElementById("newNewsTitle").value = "";
-                document.getElementById("newNewsContent").value = "";
-                document.getElementById("newNewsImage").value = "";
-                showToast("✅ Berita ditambahkan dengan gambar!", "success");
-            };
-            reader.readAsDataURL(file);
-        } else {
-            businessData.news = [newNews, ...(businessData.news || [])];
-            renderAdminLists(); saveToDrive(); renderPublic();
-            document.getElementById("newNewsTitle").value = "";
-            document.getElementById("newNewsContent").value = "";
-            showToast("✅ Berita ditambahkan!", "success");
-        }
-    };
-    
     document.getElementById("uploadOwnerPhoto").onchange = (e) => {
         let file = e.target.files[0];
         if(file) {
@@ -770,6 +701,7 @@
         businessData.owner.phone = document.getElementById("editOwnerPhone").value;
         businessData.owner.email = document.getElementById("editOwnerEmail").value;
         businessData.owner.address = document.getElementById("editOwnerAddress").value;
+        businessData.news = document.getElementById("editNews").value;
         businessData.runningText = document.getElementById("editRunningText").value;
         saveToDrive(); renderPublic();
         showToast("✅ Semua data disimpan!", "success");
@@ -785,35 +717,15 @@
         const lowerKeyword = keyword.toLowerCase();
         const filteredFacilities = (businessData.facilities || []).filter(f => f.name && f.name.toLowerCase().includes(lowerKeyword));
         const filteredProducts = (businessData.products || []).filter(p => (p.name && p.name.toLowerCase().includes(lowerKeyword)) || (p.price && p.price.toLowerCase().includes(lowerKeyword)));
-        const filteredNews = (businessData.news || []).filter(n => (n.title && n.title.toLowerCase().includes(lowerKeyword)) || (n.content && n.content.toLowerCase().includes(lowerKeyword)));
-        
         document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "";
         document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
         if(businessData.owner.photoUrl) document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
         document.getElementById("runningTextMarquee").innerText = businessData.runningText || "";
+        document.getElementById("newsDisplay").innerHTML = `<i class="fas fa-bullhorn"></i> ${escapeHtml(businessData.news) || ""}`;
         renderItems("facilitiesList", filteredFacilities, false);
         renderItems("productsList", filteredProducts, true);
-        
-        const container = document.getElementById("newsList");
-        container.innerHTML = "";
-        if(filteredNews.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i> Tidak ada berita untuk "${escapeHtml(keyword)}"</div>`;
-        } else {
-            filteredNews.forEach(item => {
-                let div = document.createElement("div");
-                div.className = "news-card";
-                let imageUrl = item.imageUrl || item.imageBase64 || null;
-                div.innerHTML = `
-                    ${imageUrl ? `<img src="${imageUrl}" class="news-image" onerror="this.style.display='none'">` : ''}
-                    <div class="news-title"><i class="fas fa-bullhorn"></i> ${escapeHtml(item.title)}</div>
-                    <div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(item.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                    <div class="news-content">${escapeHtml(item.content)}</div>
-                `;
-                container.appendChild(div);
-            });
-        }
     }
     
     window.onclick = (e) => { if(e.target === document.getElementById("adminModal")) document.getElementById("adminModal").style.display = "none"; };
