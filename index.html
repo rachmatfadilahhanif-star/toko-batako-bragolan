@@ -18,11 +18,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes tapFeedback {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.97); }
-            100% { transform: scale(1); }
-        }
         .animate-fade-up { animation: fadeInUp 0.5s ease forwards; }
         .container { max-width: 1280px; margin: 0 auto; padding: 1rem; }
         
@@ -144,7 +139,6 @@
         .item-name { font-weight: 600; font-size: 0.95rem; margin: 0.4rem 0 0.2rem; color: #2d2418; }
         .item-price { color: #d9a13b; font-weight: bold; margin-top: 4px; font-size: 0.85rem; }
         
-        /* News Card */
         .news-card {
             background: #fef8ef;
             border-radius: 1rem;
@@ -162,11 +156,7 @@
             border-radius: 0.8rem;
             background: #e8dccc;
         }
-        .news-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #5c3e2b;
-        }
+        .news-title { font-size: 1.1rem; font-weight: 700; color: #5c3e2b; }
         .news-content { color: #4a3a2a; line-height: 1.5; }
         .news-date { font-size: 0.7rem; color: #999; }
         
@@ -195,7 +185,6 @@
         button.primary:active { transform: scale(0.97); background: #3e2a1c; }
         .btn-wa { background: #25D366; }
         .btn-danger { background: #c62828; }
-        .btn-danger:active { background: #8b1a1a; }
         
         .toast {
             position: fixed; bottom: 20px; right: 20px;
@@ -242,7 +231,6 @@
         .admin-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; gap: 8px; }
         html { scroll-behavior: smooth; }
         
-        /* News admin list */
         .news-admin-item {
             background: #f5f0e8;
             border-radius: 0.8rem;
@@ -392,8 +380,9 @@
 </div>
 
 <script>
-    // KONFIGURASI - GANTI DENGAN URL SCRIPT ANDA
+    // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpD1JImL5j2AYPt-F2xDE8Ssp_hGvrBawhYWfO-VjAl4XEbVjjU69ApO6yeQizzAdy/exec";
+    const DRIVE_FOLDER_ID = "1T72KaLev9oXQRSWMLF59tt3pbqoUpKQs";
     const ADMIN_PASSWORD = "hanif123$";
     
     const JADWAL = {
@@ -467,7 +456,7 @@
         renderPublic();
         updateJamOperasional();
         try {
-            const url = `${SCRIPT_URL}?t=${Date.now()}`;
+            const url = `${SCRIPT_URL}?folderId=${DRIVE_FOLDER_ID}&t=${Date.now()}`;
             const res = await fetch(url);
             const result = await res.json();
             if(result.status === "success" && result.data) {
@@ -544,16 +533,16 @@
         if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
         if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
         
-        const payload = { action: "saveAll", passwordToken: ADMIN_PASSWORD, data: dataToSend };
+        const payload = { action: "saveAll", passwordToken: ADMIN_PASSWORD, folderId: DRIVE_FOLDER_ID, data: dataToSend };
         try {
             await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
             saveToLocalStorage();
-            showToast("✅ Data disimpan!", "success");
+            showToast("✅ Data disimpan ke Drive!", "success");
         } catch(e) { showToast("⚠️ Tersimpan di lokal", "info"); }
     }
     
     async function deleteNews(newsId) {
-        const payload = { action: "deleteNews", passwordToken: ADMIN_PASSWORD, newsId: newsId };
+        const payload = { action: "deleteNews", passwordToken: ADMIN_PASSWORD, folderId: DRIVE_FOLDER_ID, newsId: newsId };
         try {
             await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
             businessData.news = businessData.news.filter(n => n.id !== newsId);
@@ -602,7 +591,7 @@
                     <div class="news-admin-item">
                         <div class="news-admin-title">📰 ${escapeHtml(n.title)}</div>
                         <div class="news-admin-content">${escapeHtml(n.content.substring(0,80))}...</div>
-                        <button class="delNews" data-id="${n.id}" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; margin-top:6px; color:white;">Hapus Berita</button>
+                        <button class="delNews" data-id="${n.id}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; margin-top:6px; color:white;">Hapus Berita</button>
                     </div>
                 `;
             });
