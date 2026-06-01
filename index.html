@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>UD Murah Meriah Bragolan - Toko Batako</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8dfd1 100%);
+            color: #2d2418;
+            -webkit-tap-highlight-color: rgba(217, 161, 59, 0.3);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes tapFeedback {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
+        .animate-fade-up { animation: fadeInUp 0.5s ease forwards; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 1rem; }
+        
+        /* Navbar - touch friendly */
+        .navbar {
+            background: #5c3e2b;
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .logo h1 { font-size: 1.3rem; color: #ffd89b; }
+        .logo p { font-size: 0.7rem; color: #e8d5b5; }
+        .btn-admin {
+            background: #d9a13b;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .btn-admin:active { transform: scale(0.96); background: #c4892a; }
+        
+        /* Search Box - touch friendly */
+        .search-container { margin-bottom: 1.5rem; }
+        .search-box {
+            display: flex;
+            gap: 8px;
+            background: white;
+            border-radius: 2rem;
+            padding: 0.2rem 0.2rem 0.2rem 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 0.8rem 0.5rem;
+            font-size: 1rem;
+            border-radius: 2rem;
+            outline: none;
+            min-height: 44px;
+        }
+        .search-box button {
+            background: #5c3e2b;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            min-height: 44px;
+            min-width: 70px;
+            transition: all 0.2s;
+        }
+        .search-box button:active { transform: scale(0.96); background: #3e2a1c; }
+        .search-box button:last-child { background: #888; }
+        .search-box button:last-child:active { background: #666; }
+        
+        .running-area {
+            background: #2d2418;
+            border-radius: 2rem;
+            padding: 0.7rem;
+            margin-bottom: 1.5rem;
+        }
+        marquee { color: #ffd89b; font-weight: 600; font-size: 0.95rem; }
+        
+        /* Cards */
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1.2rem; }
+        .grid-3 { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 1.2rem; 
+        }
+        
+        /* Profile - touch friendly */
+        .profile-wrapper { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; }
+        .owner-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #d9a13b;
+            background: #e8dccc;
+        }
+        .info-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin: 8px 0; 
+            flex-wrap: wrap;
+            padding: 4px 0;
+        }
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            background: #f0e4d0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        /* Item Cards - touch friendly with tap feedback */
+        .item-card {
+            background: #fef8ef;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid #f0e4d0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(217, 161, 59, 0.3);
+        }
+        .item-card:active { 
+            transform: scale(0.98); 
+            background: #f9f0e2;
+            transition: transform 0.05s;
+        }
+        .item-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 0.8rem;
+            margin-bottom: 0.8rem;
+            background: #e8dccc;
+        }
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0.4rem 0 0.2rem;
+            color: #2d2418;
+        }
+        .item-price { 
+            color: #d9a13b; 
+            font-weight: bold; 
+            margin-top: 4px;
+            font-size: 0.85rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+            background: #fef8ef;
+            border-radius: 1rem;
+        }
+        
+        /* Modal - touch friendly */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px); justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white; max-width: 550px; width: 90%;
+            border-radius: 1.5rem; padding: 1.2rem;
+            max-height: 85vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+        .close-modal { 
+            font-size: 1.8rem; 
+            cursor: pointer; 
+            padding: 0 8px;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-modal:active { opacity: 0.6; }
+        input, textarea {
+            width: 100%; padding: 0.8rem; margin: 0.5rem 0;
+            border: 1px solid #ddd; border-radius: 1rem;
+            font-size: 1rem;
+            min-height: 44px;
+        }
+        button.primary {
+            background: #5c3e2b; color: white; border: none;
+            padding: 0.8rem 1.2rem; border-radius: 2rem; cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            min-height: 48px;
+            transition: all 0.2s;
+        }
+        button.primary:active { transform: scale(0.97); background: #3e2a1c; }
+        .btn-wa { background: #25D366; }
+        .btn-wa:active { background: #1da15a; }
+        
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            padding: 12px 20px; border-radius: 2rem; z-index: 2100;
+            color: white; font-size: 0.9rem;
+            max-width: 80%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .toast-success { background: #2e7d32; }
+        .toast-error { background: #c62828; }
+        .toast-info { background: #2c3e50; }
+        
+        .badge { 
+            background: #d9a13b20; 
+            padding: 8px 14px; 
+            border-radius: 2rem; 
+            font-size: 0.85rem; 
+            cursor: pointer; 
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 40px;
+        }
+        .badge:active { background: #d9a13b40; transform: scale(0.96); }
+        
+        footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 1rem; margin-top: 1rem; font-size: 0.8rem; }
+        
+        .status-open, .status-closed {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            min-height: 40px;
+        }
+        .status-open { color: #2e7d32; background: #e8f5e9; }
+        .status-closed { color: #c62828; background: #ffebee; }
+        
+        @media (max-width: 700px) {
+            .container { padding: 0.8rem; }
+            .navbar { flex-direction: column; text-align: center; gap: 0.8rem; padding: 1rem; }
+            .profile-wrapper { flex-direction: column; text-align: center; }
+            .search-box { flex-wrap: wrap; }
+            .search-box button { flex: 1; }
+            .grid-3 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; }
+            .card { padding: 1rem; }
+            .item-name { font-size: 0.9rem; }
+        }
+        
+        /* Tambahan untuk kenyamanan touch di HP */
+        @media (max-width: 480px) {
+            .btn-admin, .badge, button.primary, .search-box button {
+                min-height: 48px;
+            }
+            .info-row {
+                justify-content: center;
+            }
+            .owner-photo {
+                width: 90px;
+                height: 90px;
+            }
+            .item-card {
+                padding: 0.8rem;
+            }
+        }
+        
+        .hours-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .hours-table td { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .hours-table td:first-child { font-weight: 600; width: 100px; }
+        .preview-img {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            border: 2px solid #d9a13b;
+        }
+        .admin-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .admin-list-item button {
+            min-height: 36px;
+            padding: 6px 14px;
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+        <div class="logo">
+            <h1><i class="fas fa-hard-hat"></i> UD Murah Meriah Bragolan</h1>
+            <p>Toko Batako & Material | Harga Pabrik</p>
+        </div>
+        <button class="btn-admin" id="adminPanelBtn"><i class="fas fa-lock"></i> Admin Panel</button>
+    </div>
+
+    <div class="running-area">
+        <marquee behavior="scroll" direction="left" id="runningTextMarquee">🏆 Batako Super Padat | Free Ongkir Bragolan | Partai Besar & Kecil</marquee>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search" style="align-self:center; color:#999;"></i>
+            <input type="text" id="searchInput" placeholder="Cari produk atau fasilitas...">
+            <button id="searchBtn"><i class="fas fa-search"></i> Cari</button>
+            <button id="resetSearchBtn"><i class="fas fa-times"></i> Reset</button>
+        </div>
+    </div>
+
+    <div id="publicContent">
+        <div class="card animate-fade-up">
+            <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
+            <div class="profile-wrapper">
+                <img id="ownerPhotoImg" class="owner-photo" src="https://placehold.co/120x120/e8dccc/5c3e2b?text=Foto" alt="Foto Pemilik">
+                <div style="flex:1">
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><strong id="ownerNameSpan">-</strong></div>
+                    <div class="info-row"><div class="info-icon"><i class="fab fa-whatsapp"></i></div><span id="ownerPhoneSpan">-</span>
+                        <button id="copyPhoneBtn" class="badge"><i class="fas fa-copy"></i> Salin</button>
+                    </div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-envelope"></i></div><span id="ownerEmailSpan">-</span></div>
+                    <div class="info-row"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><span id="ownerAddressSpan">-</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card animate-fade-up">
+            <h2><i class="fas fa-industry"></i> Fasilitas Produksi</h2>
+            <div id="facilitiesList" class="grid-3"></div>
+        </div>
+
+        <div class="card animate-fade-up">
+            <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
+            <div id="productsList" class="grid-3"></div>
+        </div>
+
+        <div class="card animate-fade-up">
+            <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
+            <div class="grid-2">
+                <div>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.8535!2d110.123456!3d-7.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7b9a2b3c4d5e6f%3A0x123456789abcdef!2sBragolan!5e0!3m2!1sid!2sid!4v1680000000000" width="100%" height="250" style="border-radius:1rem; border:0;" allowfullscreen loading="lazy"></iframe>
+                    <p style="margin-top:8px;"><a href="https://maps.app.goo.gl/NVgQQLD65iUSYEi47" target="_blank" style="color:#5c3e2b;">🗺️ Buka Google Maps Lengkap →</a></p>
+                </div>
+                <div>
+                    <div id="todayStatus" style="margin-bottom: 12px;"></div>
+                    <table class="hours-table">
+                        <tr><td>Senin</td><td>07.00 – 21.30</td></tr>
+                        <tr><td>Selasa</td><td>07.00 – 21.00</td></tr>
+                        <tr><td>Rabu</td><td>07.00 – 21.00</td></tr>
+                        <tr><td>Kamis</td><td>07.00 – 21.00</td></tr>
+                        <tr><td>Jumat</td><td>07.00 – 21.00</td></tr>
+                        <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
+                        <tr style="color:#c62828; font-weight:bold;"><td>Minggu</td><td>TUTUP</td></tr>
+                    </table>
+                    <p style="margin-top:12px;"><i class="fas fa-truck"></i> <strong>Layanan:</strong> Antar Bragolan & Sekitarnya</p>
+                    <button id="whatsappBtn" class="primary btn-wa" style="margin-top:1rem;"><i class="fab fa-whatsapp"></i> Chat WA</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card animate-fade-up">
+            <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
+            <div id="newsDisplay" style="background:#fdf7ef; padding:1rem; border-radius:1rem;"></div>
+        </div>
+        <footer>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</footer>
+    </div>
+</div>
+
+<div id="adminModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h2><i class="fas fa-crown"></i> Panel Admin</h2><span class="close-modal" id="closeAdminModal">&times;</span></div>
+        <div id="adminAuthSection">
+            <input type="password" id="adminPassword" placeholder="Password Kontributor">
+            <button id="verifyAdminBtn" class="primary"><i class="fas fa-key"></i> Verifikasi</button>
+        </div>
+        <div id="adminPanelContent" style="display:none;">
+            <h3>Edit Data Bisnis</h3>
+            <div style="background:#e8f5e9; padding:10px; border-radius:1rem; margin-bottom:1rem;">
+                <small><i class="fas fa-info-circle"></i> Upload foto lalu klik "Simpan Semua ke Drive"</small>
+            </div>
+            <h4>Profil & Kontak</h4>
+            <input type="text" id="editOwnerName" placeholder="Nama Pemilik">
+            <input type="tel" id="editOwnerPhone" placeholder="No Telepon">
+            <input type="email" id="editOwnerEmail" placeholder="Email">
+            <textarea id="editOwnerAddress" rows="2" placeholder="Alamat"></textarea>
+            <label>Upload Foto Profil</label>
+            <input type="file" id="uploadOwnerPhoto" accept="image/*">
+            <div id="previewOwnerPhoto" style="margin:10px 0;"></div>
+            
+            <h4>Tambah Fasilitas</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="newFacilityName" placeholder="Nama Fasilitas" style="flex:2">
+                <input type="file" id="newFacilityPhoto" accept="image/*" style="flex:2">
+                <button id="addFacilityBtn" class="primary">+ Tambah</button>
+            </div>
+            <div id="adminFacilitiesList" style="margin:10px 0; max-height:200px; overflow:auto;"></div>
+
+            <h4>Tambah Produk</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="newProductName" placeholder="Nama Produk" style="flex:1">
+                <input type="text" id="newProductPrice" placeholder="Harga (Rp)" style="flex:1">
+                <input type="file" id="newProductPhoto" accept="image/*" style="flex:2">
+                <button id="addProductBtn" class="primary">+ Tambah</button>
+            </div>
+            <div id="adminProductsList" style="margin:10px 0; max-height:200px; overflow:auto;"></div>
+
+            <h4>Berita & Teks Jalan</h4>
+            <textarea id="editNews" rows="3" placeholder="Berita terbaru"></textarea>
+            <input type="text" id="editRunningText" placeholder="Teks berjalan">
+            <button id="saveAllDataBtn" class="primary" style="background:#2e7d32; width:100%; margin-top:1rem;"><i class="fas fa-save"></i> Simpan Semua ke Drive</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // KONFIGURASI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzagAksZ_UJjrDFW8AB_9l0p4Y8z4Ww8LVO-xWELDIFZSFSOva1IbNx3BrIX-tivw2/exec";
+    const DRIVE_FOLDER_ID = "1KXKoOUBHUCOVDEOm8ESx4rNe5DSiwEpC";
+    const ADMIN_PASSWORD = "hanif123$";
+    
+    const JADWAL = {
+        "Senin": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 30, aktif: true },
+        "Selasa": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 0, aktif: true },
+        "Rabu": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 0, aktif: true },
+        "Kamis": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 0, aktif: true },
+        "Jumat": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 0, aktif: true },
+        "Sabtu": { buka: 7, bukaMenit: 0, tutup: 21, tutupMenit: 0, aktif: true },
+        "Minggu": { aktif: false }
+    };
+    const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    
+    function updateJamOperasional() {
+        const today = new Date();
+        const hariNama = namaHari[today.getDay()];
+        const jadwal = JADWAL[hariNama];
+        const statusDiv = document.getElementById("todayStatus");
+        if (!jadwal.aktif) {
+            statusDiv.innerHTML = `<span class="status-closed"><i class="fas fa-times-circle"></i> ${hariNama}: TUTUP</span>`;
+            return;
+        }
+        const now = today.getHours() * 60 + today.getMinutes();
+        const buka = jadwal.buka * 60 + jadwal.bukaMenit;
+        const tutup = jadwal.tutup * 60 + jadwal.tutupMenit;
+        const isOpen = now >= buka && now < tutup;
+        if (isOpen) {
+            statusDiv.innerHTML = `<span class="status-open"><i class="fas fa-store"></i> ${hariNama}: BUKA - Tutup ${jadwal.tutup}:${String(jadwal.tutupMenit).padStart(2,'0')}</span>`;
+        } else {
+            statusDiv.innerHTML = `<span class="status-closed"><i class="fas fa-clock"></i> ${hariNama}: TUTUP - Buka ${jadwal.buka}:${String(jadwal.bukaMenit).padStart(2,'0')}</span>`;
+        }
+    }
+    
+    let businessData = {
+        owner: { name: "Bapak Slamet Riyadi", phone: "081234567890", email: "tokobatako@bragolan.com", address: "Jl. Raya Bragolan No. 45, Bragolan", photoBase64: "", photoUrl: "" },
+        facilities: [
+            { name: "Mesin Press Batako Hidrolik", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Mesin+Press" },
+            { name: "Oven Pengering Kapasitas Besar", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Oven+Pengering" },
+            { name: "Lahan Penjemuran 2000m²", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Lahan+Jemur" }
+        ],
+        products: [
+            { name: "Batako Lubang", price: "Rp 1.800/pcs", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Batako+Lubang" },
+            { name: "Batako Press Padat", price: "Rp 2.200/pcs", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Batako+Press" },
+            { name: "Bata Ringan Hebel", price: "Rp 850.000/m³", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Bata+Ringan" },
+            { name: "Pasir Pasang", price: "Rp 180.000/m³", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Pasir+Pasang" },
+            { name: "Semen Padang 40kg", price: "Rp 65.000/zak", photoUrl: "https://placehold.co/400x400/e8dccc/5c3e2b?text=Semen+Padang" }
+        ],
+        news: "🎉 PROMO AKHIR TAHUN! Diskon 10% untuk pembelian 1000 batako. Free ongkir area Bragolan.",
+        runningText: "🏆 Batako Super Padat Kualitas Ekspor | Free Ongkir Bragolan | Partai Besar & Kecil"
+    };
+    
+    let originalFacilities = [], originalProducts = [], searchActive = false;
+
+    function showToast(msg, type = "success") {
+        let toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function saveToLocalStorage() { localStorage.setItem("businessData_backup", JSON.stringify(businessData)); }
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem("businessData_backup");
+        if(saved) { try { const parsed = JSON.parse(saved); if(parsed.facilities?.length) businessData = parsed; } catch(e) {} }
+    }
+
+    async function loadData() {
+        loadFromLocalStorage();
+        renderPublic();
+        updateJamOperasional();
+        try {
+            const url = `${SCRIPT_URL}?action=getData&folderId=${DRIVE_FOLDER_ID}&t=${Date.now()}`;
+            const res = await fetch(url);
+            const result = await res.json();
+            if(result.status === "success" && result.data) {
+                if(result.data.facilities?.length) businessData.facilities = result.data.facilities;
+                if(result.data.products?.length) businessData.products = result.data.products;
+                if(result.data.owner) businessData.owner = { ...businessData.owner, ...result.data.owner };
+                if(result.data.news) businessData.news = result.data.news;
+                if(result.data.runningText) businessData.runningText = result.data.runningText;
+                saveToLocalStorage();
+                showToast("✅ Data dari Drive dimuat!", "success");
+                renderPublic();
+            }
+        } catch(e) { console.log("Drive offline, pakai lokal"); }
+    }
+
+    function renderItems(containerId, items, showPrice = false) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        if(!items || items.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i> Belum ada data</div>`;
+            return;
+        }
+        items.forEach(item => {
+            let div = document.createElement("div");
+            div.className = "item-card";
+            let imageUrl = item.photoUrl || item.photoBase64 || null;
+            let imageHtml = '';
+            if(imageUrl && imageUrl.startsWith('data:image')) {
+                imageHtml = `<img src="${imageUrl}" class="item-img" alt="${escapeHtml(item.name)}">`;
+            } else if(imageUrl && (imageUrl.startsWith('http') || imageUrl.startsWith('https'))) {
+                imageHtml = `<img src="${imageUrl}" class="item-img" onerror="this.src='https://placehold.co/400x400/e8dccc/5c3e2b?text=${encodeURIComponent(item.name)}'" alt="${escapeHtml(item.name)}">`;
+            } else {
+                imageHtml = `<div class="item-img" style="background:#e8dccc; display:flex;align-items:center;justify-content:center;"><i class="fas fa-industry fa-3x"></i></div>`;
+            }
+            div.innerHTML = imageHtml + `<div class="item-name">${escapeHtml(item.name)}</div>`;
+            if(showPrice && item.price) div.innerHTML += `<div class="item-price">💰 ${escapeHtml(item.price)}</div>`;
+            container.appendChild(div);
+        });
+    }
+    
+    function renderPublic() {
+        if(searchActive) return;
+        document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "Belum diisi";
+        document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
+        document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
+        document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
+        if(businessData.owner.photoUrl) document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+        document.getElementById("runningTextMarquee").innerText = businessData.runningText || "🏆 Batako Super Padat!";
+        document.getElementById("newsDisplay").innerHTML = `<i class="fas fa-bullhorn"></i> ${escapeHtml(businessData.news) || "Selamat datang!"}`;
+        renderItems("facilitiesList", businessData.facilities, false);
+        renderItems("productsList", businessData.products, true);
+    }
+    
+    function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+    
+    async function saveToDrive() {
+        let dataToSend = JSON.parse(JSON.stringify(businessData));
+        if(dataToSend.owner) delete dataToSend.owner.photoBase64;
+        if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
+        if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
+        const payload = { action: "saveAll", passwordToken: ADMIN_PASSWORD, folderId: DRIVE_FOLDER_ID, data: dataToSend };
+        try {
+            await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+            saveToLocalStorage();
+            showToast("✅ Data disimpan!", "success");
+        } catch(e) { showToast("⚠️ Tersimpan di lokal", "info"); }
+    }
+    
+    // ========== EVENT LISTENERS ==========
+    document.getElementById("adminPanelBtn").onclick = () => document.getElementById("adminModal").style.display = "flex";
+    document.getElementById("closeAdminModal").onclick = () => document.getElementById("adminModal").style.display = "none";
+    document.getElementById("verifyAdminBtn").onclick = () => {
+        if(document.getElementById("adminPassword").value === ADMIN_PASSWORD) {
+            document.getElementById("adminAuthSection").style.display = "none";
+            document.getElementById("adminPanelContent").style.display = "block";
+            renderAdminLists();
+        } else { alert("Password salah!"); }
+    };
+    
+    function renderAdminLists() {
+        const adminFacDiv = document.getElementById("adminFacilitiesList");
+        adminFacDiv.innerHTML = "<strong>Daftar Fasilitas:</strong>";
+        businessData.facilities.forEach((f, i) => {
+            adminFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:6px 12px;">Hapus</button></div>`;
+        });
+        document.querySelectorAll(".delFac").forEach(btn => {
+            btn.onclick = () => { businessData.facilities.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
+        });
+        const adminProdDiv = document.getElementById("adminProductsList");
+        adminProdDiv.innerHTML = "<strong>Daftar Produk:</strong>";
+        businessData.products.forEach((p, i) => {
+            adminProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border-radius:1rem; padding:6px 12px;">Hapus</button></div>`;
+        });
+        document.querySelectorAll(".delProd").forEach(btn => {
+            btn.onclick = () => { businessData.products.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
+        });
+        document.getElementById("editOwnerName").value = businessData.owner.name || "";
+        document.getElementById("editOwnerPhone").value = businessData.owner.phone || "";
+        document.getElementById("editOwnerEmail").value = businessData.owner.email || "";
+        document.getElementById("editOwnerAddress").value = businessData.owner.address || "";
+        document.getElementById("editNews").value = businessData.news || "";
+        document.getElementById("editRunningText").value = businessData.runningText || "";
+    }
+    
+    document.getElementById("addFacilityBtn").onclick = () => {
+        let name = document.getElementById("newFacilityName").value.trim();
+        let file = document.getElementById("newFacilityPhoto").files[0];
+        if(!name) return alert("Masukkan nama fasilitas");
+        if(file) {
+            let reader = new FileReader();
+            reader.onload = (ev) => {
+                businessData.facilities.push({ name: name, photoBase64: ev.target.result, photoUrl: ev.target.result });
+                renderAdminLists(); saveToDrive(); renderPublic();
+                document.getElementById("newFacilityName").value = "";
+                document.getElementById("newFacilityPhoto").value = "";
+                showToast("✅ Fasilitas ditambahkan!", "success");
+            };
+            reader.readAsDataURL(file);
+        } else {
+            businessData.facilities.push({ name: name });
+            renderAdminLists(); saveToDrive(); renderPublic();
+            document.getElementById("newFacilityName").value = "";
+        }
+    };
+    
+    document.getElementById("addProductBtn").onclick = () => {
+        let name = document.getElementById("newProductName").value.trim();
+        let price = document.getElementById("newProductPrice").value;
+        let file = document.getElementById("newProductPhoto").files[0];
+        if(!name) return alert("Nama produk harus diisi");
+        if(file) {
+            let reader = new FileReader();
+            reader.onload = (ev) => {
+                businessData.products.push({ name: name, price: price, photoBase64: ev.target.result, photoUrl: ev.target.result });
+                renderAdminLists(); saveToDrive(); renderPublic();
+                document.getElementById("newProductName").value = "";
+                document.getElementById("newProductPrice").value = "";
+                document.getElementById("newProductPhoto").value = "";
+                showToast("✅ Produk ditambahkan!", "success");
+            };
+            reader.readAsDataURL(file);
+        } else {
+            businessData.products.push({ name: name, price: price });
+            renderAdminLists(); saveToDrive(); renderPublic();
+            document.getElementById("newProductName").value = "";
+            document.getElementById("newProductPrice").value = "";
+        }
+    };
+    
+    document.getElementById("uploadOwnerPhoto").onchange = (e) => {
+        let file = e.target.files[0];
+        if(file) {
+            let reader = new FileReader();
+            reader.onload = (ev) => {
+                businessData.owner.photoBase64 = ev.target.result;
+                businessData.owner.photoUrl = ev.target.result;
+                document.getElementById("previewOwnerPhoto").innerHTML = `<img src="${ev.target.result}" class="preview-img">`;
+                saveToDrive(); renderPublic();
+                showToast("✅ Foto profil diperbarui!", "success");
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    document.getElementById("saveAllDataBtn").onclick = () => {
+        businessData.owner.name = document.getElementById("editOwnerName").value;
+        businessData.owner.phone = document.getElementById("editOwnerPhone").value;
+        businessData.owner.email = document.getElementById("editOwnerEmail").value;
+        businessData.owner.address = document.getElementById("editOwnerAddress").value;
+        businessData.news = document.getElementById("editNews").value;
+        businessData.runningText = document.getElementById("editRunningText").value;
+        saveToDrive(); renderPublic();
+        showToast("✅ Semua data disimpan!", "success");
+    };
+    
+    document.getElementById("copyPhoneBtn").onclick = () => { if(businessData.owner.phone) { navigator.clipboard.writeText(businessData.owner.phone); showToast("📋 Nomor tersalin!"); } };
+    document.getElementById("whatsappBtn").onclick = () => { let phone = businessData.owner.phone?.replace(/\D/g,''); if(phone) window.open(`https://wa.me/${phone}`); else alert("Nomor WA belum diisi"); };
+    document.getElementById("searchBtn").onclick = () => { const kw = document.getElementById("searchInput").value.trim(); if(kw) searchItems(kw); };
+    document.getElementById("resetSearchBtn").onclick = () => { searchActive = false; document.getElementById("searchInput").value = ""; renderPublic(); };
+    
+    function searchItems(keyword) {
+        searchActive = true;
+        const lowerKeyword = keyword.toLowerCase();
+        const filteredFacilities = (businessData.facilities || []).filter(f => f.name && f.name.toLowerCase().includes(lowerKeyword));
+        const filteredProducts = (businessData.products || []).filter(p => (p.name && p.name.toLowerCase().includes(lowerKeyword)) || (p.price && p.price.toLowerCase().includes(lowerKeyword)));
+        document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "";
+        document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
+        document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
+        document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
+        if(businessData.owner.photoUrl) document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+        document.getElementById("runningTextMarquee").innerText = businessData.runningText || "";
+        document.getElementById("newsDisplay").innerHTML = `<i class="fas fa-bullhorn"></i> ${escapeHtml(businessData.news) || ""}`;
+        renderItems("facilitiesList", filteredFacilities, false);
+        renderItems("productsList", filteredProducts, true);
+    }
+    
+    window.onclick = (e) => { if(e.target === document.getElementById("adminModal")) document.getElementById("adminModal").style.display = "none"; };
+    setInterval(updateJamOperasional, 60000);
+    loadData();
+</script>
+</body>
+</html>
