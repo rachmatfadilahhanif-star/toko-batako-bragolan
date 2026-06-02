@@ -83,28 +83,20 @@
             margin-top: 0.5rem;
         }
         
+        /* Navbar - TANPA TOMBOL ADMIN */
         .navbar {
             background: #5c3e2b;
             border-radius: 1.5rem;
             padding: 1rem 1.5rem;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             margin-bottom: 1.5rem;
             gap: 1rem;
         }
+        .logo { text-align: center; }
         .logo h1 { font-size: 1.6rem; color: #ffd89b; }
         .logo p { font-size: 0.85rem; color: #e8d5b5; }
-        .btn-admin {
-            background: #d9a13b;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-        }
         
         .search-box {
             display: flex;
@@ -261,7 +253,32 @@
         .btn-fb { background: #1877f2; }
         .badge { background: #d9a13b20; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
         
-        footer { text-align: center; background: #2d2418; color: #e8d5b5; border-radius: 1.5rem; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; }
+        /* FOOTER DENGAN TOMBOL ADMIN DI BAWAH */
+        footer { 
+            text-align: center; 
+            background: #2d2418; 
+            color: #e8d5b5; 
+            border-radius: 1.5rem; 
+            padding: 1rem; 
+            margin-top: 1rem; 
+            font-size: 0.85rem; 
+        }
+        .footer-admin-btn {
+            background: #d9a13b;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #2d2418;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        .footer-admin-btn:hover {
+            background: #c4892a;
+            transform: scale(1.02);
+        }
         .social-links { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.8rem; }
         .social-links a { color: #e8d5b5; text-decoration: none; font-size: 1.3rem; transition: 0.2s; }
         .social-links a:hover { color: #ffd89b; }
@@ -366,7 +383,7 @@
         
         @media (max-width: 700px) {
             body { font-size: 16px; }
-            .navbar { flex-direction: column; text-align: center; gap: 0.8rem; }
+            .navbar { flex-direction: column; text-align: center; }
             .profile-wrapper { flex-direction: column; text-align: center; }
             .search-box { flex-wrap: wrap; }
             .grid-3 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.8rem; }
@@ -388,12 +405,12 @@
 </div>
 
 <div id="mainContent" class="container" style="display: none;">
+    <!-- NAVBAR TANPA TOMBOL ADMIN -->
     <div class="navbar">
         <div class="logo">
             <h1><i class="fas fa-hard-hat"></i> UD Murah Meriah Bragolan</h1>
             <p>Toko Batako & Material | Harga Pabrik</p>
         </div>
-        <button class="btn-admin" id="adminPanelBtn"><i class="fas fa-lock"></i> Admin Panel</button>
     </div>
 
     <!-- RUNNING TEXT -->
@@ -453,13 +470,13 @@
             <div>
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
-                    <tr><td>Senin</td><td>07.00 – 21.30</td></tr>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Rabu</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Kamis</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Jumat</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
+                    <tr><td>Senin</td><td>07.00 – 21.30</td>
+                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
+                    <tr><td>Rabu</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
+                    <td>.<td>Jumat</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
+                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
@@ -469,8 +486,9 @@
         </div>
     </div>
     
-    <!-- 6. FOOTER -->
+    <!-- 6. FOOTER DENGAN TOMBOL ADMIN DI DALAMNYA -->
     <footer>
+        <button class="footer-admin-btn" id="adminPanelBtn"><i class="fas fa-lock"></i> Panel Admin</button>
         <p>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</p>
         <div class="social-links">
             <a href="https://www.facebook.com/profile.php?id=61585289540901" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
@@ -812,6 +830,7 @@
         document.getElementById("editRunningText").value = businessData.runningText || "";
     }
     
+    // Event listener untuk tombol admin (sekarang di footer)
     document.getElementById("adminPanelBtn").onclick = () => document.getElementById("adminModal").style.display = "flex";
     document.getElementById("closeAdminModal").onclick = () => document.getElementById("adminModal").style.display = "none";
     document.getElementById("verifyAdminBtn").onclick = () => {
