@@ -83,20 +83,42 @@
             margin-top: 0.5rem;
         }
         
-        /* Navbar - TANPA TOMBOL ADMIN */
+        /* Navbar - dengan jam digital di kanan */
         .navbar {
             background: #5c3e2b;
             border-radius: 1.5rem;
             padding: 1rem 1.5rem;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
             margin-bottom: 1.5rem;
             gap: 1rem;
         }
-        .logo { text-align: center; }
+        .logo { text-align: left; }
         .logo h1 { font-size: 1.6rem; color: #ffd89b; }
         .logo p { font-size: 0.85rem; color: #e8d5b5; }
+        
+        /* JAM DIGITAL */
+        .digital-clock {
+            background: #2d2418;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            text-align: center;
+            font-family: 'Inter', monospace;
+            min-width: 160px;
+        }
+        .clock-time {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffd89b;
+            letter-spacing: 2px;
+        }
+        .clock-date {
+            font-size: 0.7rem;
+            color: #e8d5b5;
+            margin-top: 0.2rem;
+        }
         
         .search-box {
             display: flex;
@@ -390,6 +412,7 @@
             .news-img { height: 150px; }
             .news-title { font-size: 1rem; }
             .running-text { font-size: 0.9rem; animation-duration: 15s; }
+            .digital-clock { margin-top: 0.5rem; }
         }
     </style>
 </head>
@@ -405,11 +428,16 @@
 </div>
 
 <div id="mainContent" class="container" style="display: none;">
-    <!-- NAVBAR TANPA TOMBOL ADMIN -->
+    <!-- NAVBAR DENGAN JAM DIGITAL -->
     <div class="navbar">
         <div class="logo">
             <h1><i class="fas fa-hard-hat"></i> UD Murah Meriah Bragolan</h1>
             <p>Toko Batako & Material | Harga Pabrik</p>
+        </div>
+        <!-- JAM DIGITAL -->
+        <div class="digital-clock">
+            <div class="clock-time" id="clockTime">--:--:--</div>
+            <div class="clock-date" id="clockDate">---, -- --- ----</div>
         </div>
     </div>
 
@@ -474,7 +502,7 @@
                     <tr><td>Selasa</td><td>07.00 – 21.00</td>
                     <tr><td>Rabu</td><td>07.00 – 21.00</td>
                     <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
-                    <td>.<td>Jumat</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
                     <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
                     <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
@@ -576,6 +604,34 @@
         news: [],
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
+    
+    // ========== FUNGSI JAM DIGITAL ==========
+    function updateDigitalClock() {
+        const now = new Date();
+        
+        // Format waktu HH:MM:SS
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        
+        // Format tanggal
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        
+        const dayName = days[now.getDay()];
+        const day = now.getDate();
+        const month = months[now.getMonth()];
+        const year = now.getFullYear();
+        const dateString = `${dayName}, ${day} ${month} ${year}`;
+        
+        document.getElementById('clockTime').innerHTML = timeString;
+        document.getElementById('clockDate').innerHTML = dateString;
+    }
+    
+    // Jalankan jam setiap detik
+    setInterval(updateDigitalClock, 1000);
+    updateDigitalClock(); // Jalankan sekali saat halaman load
     
     function hideLoadingAndShowContent() {
         const loadingScreen = document.getElementById('loadingScreen');
