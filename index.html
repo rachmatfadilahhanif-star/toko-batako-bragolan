@@ -16,7 +16,7 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
         
-        /* LOADING SCREEN - Tanpa tulisan Drive */
+        /* LOADING SCREEN */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -28,7 +28,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.5s ease;
         }
         .loading-content {
             text-align: center;
@@ -58,7 +58,36 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Skeleton loading untuk konten */
+        /* RUNNING TEXT / MARQUEE - PASTI BERGERAK */
+        .running-area {
+            background: #2d2418;
+            border-radius: 2rem;
+            padding: 0.9rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .running-text {
+            display: inline-block;
+            color: #ffd89b;
+            font-weight: 600;
+            font-size: 1.1rem;
+            animation: scrollText 20s linear infinite;
+            padding-right: 2rem;
+        }
+        .running-text:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollText {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Skeleton loading */
         .skeleton {
             background: linear-gradient(90deg, #e8dccc 25%, #f5f0e8 50%, #e8dccc 75%);
             background-size: 200% 100%;
@@ -86,10 +115,6 @@
             background: #d5c9b0;
             border-radius: 0.5rem;
             margin: 0.3rem 0;
-        }
-        .skeleton-text-sm {
-            width: 60%;
-            height: 12px;
         }
         
         .navbar {
@@ -142,14 +167,6 @@
         }
         .search-box button:last-child { background: #888; }
         
-        .running-area {
-            background: #2d2418;
-            border-radius: 2rem;
-            padding: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        marquee { color: #ffd89b; font-weight: 600; font-size: 1.1rem; }
-        
         .card {
             background: rgba(255,255,255,0.95);
             border-radius: 1.5rem;
@@ -176,7 +193,6 @@
             border: 3px solid #d9a13b;
             background: #e8dccc;
             cursor: pointer;
-            transition: transform 0.2s;
         }
         .owner-photo:hover { transform: scale(1.02); }
         .info-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
@@ -380,7 +396,7 @@
         }
         .news-detail-title { font-size: 1.5rem; font-weight: 700; color: #5c3e2b; margin-bottom: 0.5rem; }
         .news-detail-meta { font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
-        .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; }
+        .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; overflow-y: auto; max-height: 60vh; }
         
         @media (max-width: 700px) {
             body { font-size: 16px; }
@@ -390,53 +406,18 @@
             .grid-3 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.8rem; }
             .news-img { height: 150px; }
             .news-title { font-size: 1rem; }
+            .running-text { font-size: 0.9rem; animation-duration: 15s; }
         }
     </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN - Aman tanpa tulisan Drive -->
+<!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-spinner"></div>
         <div class="loading-text">⏳ Memuat data...</div>
         <div class="loading-subtext">Mohon tunggu sebentar</div>
-    </div>
-</div>
-
-<!-- SKELETON LOADING - Konten sementara -->
-<div id="skeletonContent" style="display: none;">
-    <div class="container">
-        <div class="navbar skeleton" style="height: 80px; border-radius: 1.5rem;"></div>
-        <div class="running-area skeleton" style="height: 50px; border-radius: 2rem;"></div>
-        <div class="search-box skeleton" style="height: 60px; border-radius: 3rem;"></div>
-        <div class="card">
-            <div class="skeleton-text" style="width: 30%; height: 28px; margin-bottom: 1rem;"></div>
-            <div class="profile-wrapper">
-                <div class="skeleton" style="width: 100px; height: 100px; border-radius: 50%;"></div>
-                <div style="flex:1">
-                    <div class="skeleton-text" style="width: 60%; height: 20px; margin: 8px 0;"></div>
-                    <div class="skeleton-text" style="width: 50%; height: 20px; margin: 8px 0;"></div>
-                    <div class="skeleton-text" style="width: 70%; height: 20px; margin: 8px 0;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="skeleton-text" style="width: 30%; height: 28px; margin-bottom: 1rem;"></div>
-            <div class="grid-3">
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="skeleton-text" style="width: 30%; height: 28px; margin-bottom: 1rem;"></div>
-            <div class="grid-3">
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -449,8 +430,9 @@
         <button class="btn-admin" id="adminPanelBtn"><i class="fas fa-lock"></i> Admin Panel</button>
     </div>
 
+    <!-- RUNNING TEXT - PASTI BERGERAK -->
     <div class="running-area">
-        <marquee behavior="scroll" direction="left" id="runningTextMarquee"></marquee>
+        <div class="running-text" id="runningTextMarquee">🏆 Batako Super Padat | Free Ongkir Bragolan | Partai Besar & Kecil</div>
     </div>
 
     <div class="search-box">
@@ -476,7 +458,7 @@
     </div>
 
     <div class="card">
-        <h2><i class="fas fa-industry"></i> Fasilitas Produksi</h2>
+        <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
@@ -495,13 +477,13 @@
             <div>
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
-                    <tr><td>Senin</td><td>07.00 – 21.30</td></tr>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Rabu</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Kamis</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Jumat</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
+                    <tr><td>Senin</td><td>07.00 – 21.30</td>
+                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Rabu</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
+                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
@@ -530,7 +512,7 @@
     <img id="zoomImage" src="" alt="Zoom">
 </div>
 
-<!-- MODAL BACA BERITA DETAIL -->
+<!-- MODAL BACA BERITA -->
 <div id="newsDetailModal" class="news-detail-modal">
     <div class="news-detail-content">
         <span class="news-detail-close" onclick="closeNewsDetail()">&times;</span>
@@ -579,7 +561,7 @@
 
             <h4>Tambah Berita</h4>
             <input type="text" id="newNewsTitle" placeholder="Judul Berita">
-            <textarea id="newNewsContent" rows="3" placeholder="Isi berita / deskripsi lengkap..."></textarea>
+            <textarea id="newNewsContent" rows="3" placeholder="Isi berita..."></textarea>
             <input type="file" id="newNewsImage" accept="image/*">
             <button id="addNewsBtn" class="primary">Tambah Berita</button>
             <div id="adminNewsList"></div>
@@ -604,12 +586,6 @@
         news: [],
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
-    
-    function showSkeleton() {
-        document.getElementById('loadingScreen').style.display = 'flex';
-        document.getElementById('skeletonContent').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'none';
-    }
     
     function hideLoadingAndShowContent() {
         const loadingScreen = document.getElementById('loadingScreen');
@@ -679,8 +655,6 @@
     }
 
     async function loadData() {
-        showSkeleton();
-        
         try {
             const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
             const result = await res.json();
@@ -742,9 +716,8 @@
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
         if(businessData.owner.photoUrl) {
-            const ownerImg = document.getElementById("ownerPhotoImg");
-            ownerImg.src = businessData.owner.photoUrl;
-            ownerImg.onclick = () => openZoomModal(businessData.owner.photoUrl);
+            document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+            document.getElementById("ownerPhotoImg").onclick = () => openZoomModal(businessData.owner.photoUrl);
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
@@ -827,7 +800,7 @@
         }
     }
     
-    // ADMIN PANEL (sama seperti sebelumnya)
+    // ADMIN PANEL
     function renderAdminLists() {
         const adminFacDiv = document.getElementById("adminFacilitiesList");
         adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
