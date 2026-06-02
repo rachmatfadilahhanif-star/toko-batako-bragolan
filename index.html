@@ -16,6 +16,31 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
         
+        /* RUNNING TEXT / MARQUEE - PASTI BERGERAK */
+        .running-area {
+            background: #2d2418;
+            border-radius: 2rem;
+            padding: 0.9rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .running-text {
+            display: inline-block;
+            color: #ffd89b;
+            font-weight: 600;
+            font-size: 1.1rem;
+            animation: scrollText 20s linear infinite;
+            padding-right: 2rem;
+        }
+        .running-text:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scrollText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
         /* LOADING SCREEN */
         .loading-screen {
             position: fixed;
@@ -43,6 +68,10 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 1rem auto;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .loading-text {
             font-size: 1.2rem;
             color: #5c3e2b;
@@ -52,69 +81,6 @@
             font-size: 0.85rem;
             color: #888;
             margin-top: 0.5rem;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* RUNNING TEXT / MARQUEE - PASTI BERGERAK */
-        .running-area {
-            background: #2d2418;
-            border-radius: 2rem;
-            padding: 0.9rem;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .running-text {
-            display: inline-block;
-            color: #ffd89b;
-            font-weight: 600;
-            font-size: 1.1rem;
-            animation: scrollText 20s linear infinite;
-            padding-right: 2rem;
-        }
-        .running-text:hover {
-            animation-play-state: paused;
-        }
-        @keyframes scrollText {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-        
-        /* Skeleton loading */
-        .skeleton {
-            background: linear-gradient(90deg, #e8dccc 25%, #f5f0e8 50%, #e8dccc 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 0.5rem;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .skeleton-card {
-            background: #e8dccc;
-            border-radius: 1rem;
-            padding: 1rem;
-        }
-        .skeleton-img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #d5c9b0;
-            border-radius: 0.8rem;
-            margin-bottom: 0.7rem;
-        }
-        .skeleton-text {
-            height: 16px;
-            background: #d5c9b0;
-            border-radius: 0.5rem;
-            margin: 0.3rem 0;
         }
         
         .navbar {
@@ -430,7 +396,7 @@
         <button class="btn-admin" id="adminPanelBtn"><i class="fas fa-lock"></i> Admin Panel</button>
     </div>
 
-    <!-- RUNNING TEXT - PASTI BERGERAK -->
+    <!-- RUNNING TEXT -->
     <div class="running-area">
         <div class="running-text" id="runningTextMarquee">🏆 Batako Super Padat | Free Ongkir Bragolan | Partai Besar & Kecil</div>
     </div>
@@ -442,6 +408,7 @@
         <button id="resetSearchBtn">Reset</button>
     </div>
 
+    <!-- 1. PROFIL PEMILIK -->
     <div class="card">
         <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
         <div class="profile-wrapper">
@@ -457,16 +424,25 @@
         </div>
     </div>
 
+    <!-- 2. FASILITAS KAMI SIEDIAKAN -->
     <div class="card">
         <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
+    <!-- 3. PRODUK & HARGA -->
     <div class="card">
         <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
         <div id="productsList" class="grid-3"></div>
     </div>
 
+    <!-- 4. BERITA & PENGUMUMAN -->
+    <div class="card">
+        <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
+        <div id="newsList"></div>
+    </div>
+
+    <!-- 5. LOKASI & JAM OPERASIONAL (DI BAWAH BERITA) -->
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
@@ -477,13 +453,13 @@
             <div>
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
-                    <tr><td>Senin</td><td>07.00 – 21.30</td>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Rabu</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
+                    <tr><td>Senin</td><td>07.00 – 21.30</td></tr>
+                    <tr><td>Selasa</td><td>07.00 – 21.00</td></tr>
+                    <tr><td>Rabu</td><td>07.00 – 21.00</td></tr>
+                    <tr><td>Kamis</td><td>07.00 – 21.00</td></tr>
+                    <tr><td>Jumat</td><td>07.00 – 21.00</td></tr>
+                    <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
+                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
@@ -492,12 +468,8 @@
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
-        <div id="newsList"></div>
-    </div>
     
+    <!-- 6. FOOTER -->
     <footer>
         <p>© 2024 UD Murah Meriah Bragolan | Toko Batako Bragolan</p>
         <div class="social-links">
