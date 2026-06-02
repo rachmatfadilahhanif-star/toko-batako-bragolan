@@ -284,31 +284,6 @@
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
         .close-modal { font-size: 1.8rem; cursor: pointer; padding: 0 10px; }
         
-        /* MODAL PALSU (HONEYPOT) */
-        .fake-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        .fake-modal-content {
-            background: #f0e6d8; max-width: 500px; width: 90%;
-            border-radius: 1.5rem; padding: 1.5rem;
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 2px solid #888;
-        }
-        .fake-modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; color: #888; }
-        .fake-warning {
-            background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.8rem; color: #856404;
-        }
-        
         input, textarea {
             width: 100%; padding: 0.8rem; margin: 0.5rem 0;
             border: 1px solid #ddd; border-radius: 1rem;
@@ -435,6 +410,31 @@
         .news-detail-meta { font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
         .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; overflow-y: auto; max-height: 60vh; }
         
+        /* GANTI PASSWORD SECTION */
+        .change-pass-section {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .change-pass-section input {
+            margin: 0.5rem 0;
+        }
+        .security-link {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+        .security-link a {
+            color: #5c3e2b;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .security-link a:hover {
+            text-decoration: underline;
+        }
+        
         @media (max-width: 700px) {
             body { font-size: 16px; }
             .navbar { flex-direction: column; text-align: center; }
@@ -493,6 +493,7 @@
         <button id="resetSearchBtn">Reset</button>
     </div>
 
+    <!-- PROFIL PEMILIK -->
     <div class="card">
         <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
         <div class="profile-wrapper">
@@ -508,21 +509,25 @@
         </div>
     </div>
 
+    <!-- FASILITAS -->
     <div class="card">
         <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
+    <!-- PRODUK -->
     <div class="card">
         <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
         <div id="productsList" class="grid-3"></div>
     </div>
 
+    <!-- BERITA -->
     <div class="card">
         <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
         <div id="newsList"></div>
     </div>
 
+    <!-- LOKASI & JAM -->
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
@@ -536,10 +541,10 @@
                     <tr><td>Senin</td><td>07.00 – 21.30</td>
                     <tr><td>Selasa</td><td>07.00 – 21.00</td>
                     <tr><td>Rabu</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
+                    </td>.<td>Kamis</td><td>07.00 – 21.00</td>
                     <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
                     <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</tr>
+                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
@@ -575,16 +580,29 @@
     </div>
 </div>
 
-<!-- MODAL ADMIN ASLI -->
+<!-- MODAL ADMIN DENGAN FITUR GANTI PASSWORD -->
 <div id="adminModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h2><i class="fas fa-crown"></i> Panel Admin</h2><span class="close-modal" id="closeAdminModal">&times;</span></div>
         <div id="adminAuthSection">
             <input type="password" id="adminPassword" placeholder="Password">
             <button id="verifyAdminBtn" class="primary">Verifikasi</button>
+            <div class="security-link">
+                <a id="forgotOrChangeLink">🔐 Ganti Password</a>
+            </div>
         </div>
         <div id="adminPanelContent" style="display:none;">
+            <div class="change-pass-section" id="changePassSection">
+                <h4>Ganti Password Admin</h4>
+                <input type="password" id="newPassword" placeholder="Password Baru">
+                <input type="password" id="confirmPassword" placeholder="Konfirmasi Password Baru">
+                <button id="saveNewPasswordBtn" class="primary" style="background:#2e7d32;">Simpan Password Baru</button>
+                <button id="cancelChangePassBtn" class="primary" style="background:#888; margin-top:5px;">Batal</button>
+            </div>
             <h3>Edit Data Bisnis</h3>
+            <div class="security-link" style="margin-bottom:10px; text-align:right;">
+                <a id="changePassFromInside">⚙️ Ganti Password Admin</a>
+            </div>
             <h4>Profil</h4>
             <input type="text" id="editOwnerName" placeholder="Nama Pemilik">
             <input type="tel" id="editOwnerPhone" placeholder="No Telepon">
@@ -624,61 +642,17 @@
     </div>
 </div>
 
-<!-- MODAL ADMIN PALSU (HONEYPOT) - MENJIPLAK TAMPILAN ASLI -->
-<div id="fakeAdminModal" class="fake-modal">
-    <div class="fake-modal-content">
-        <div class="fake-modal-header"><h2><i class="fas fa-globe"></i> panel web</h2><span class="close-modal" id="closeFakeModal">&times;</span></div>
-        <div id="fakeAuthSection">
-            <input type="password" id="fakePassword" placeholder="Password">
-            <button id="verifyFakeBtn" class="primary">Verifikasi</button>
-        </div>
-        <div id="fakePanelContent" style="display:none;">
-            <div class="fake-warning">
-                <i class="fas fa-info-circle"></i> Mode Demo - Data hanya untuk tampilan
-            </div>
-            <h3>Kelola Data</h3>
-            <div class="fake-warning">Perubahan hanya simulasi, tidak tersimpan ke server.</div>
-            
-            <h4>Profil</h4>
-            <input type="text" id="fakeOwnerName" placeholder="Nama Pemilik">
-            <input type="tel" id="fakeOwnerPhone" placeholder="No Telepon">
-            <input type="email" id="fakeOwnerEmail" placeholder="Email">
-            <textarea id="fakeOwnerAddress" rows="2" placeholder="Alamat"></textarea>
-            
-            <h4>Tambah Fasilitas</h4>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <input type="text" id="newFakeFacilityName" placeholder="Nama" style="flex:2">
-                <button id="addFakeFacilityBtn" class="primary" style="background:#999;">Tambah Demo</button>
-            </div>
-            <div id="fakeFacilitiesList"></div>
-
-            <h4>Tambah Produk</h4>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <input type="text" id="newFakeProductName" placeholder="Produk" style="flex:1">
-                <input type="text" id="newFakeProductPrice" placeholder="Harga" style="flex:1">
-                <button id="addFakeProductBtn" class="primary" style="background:#999;">Tambah Demo</button>
-            </div>
-            <div id="fakeProductsList"></div>
-
-            <h4>Berita</h4>
-            <input type="text" id="newFakeNewsTitle" placeholder="Judul Berita">
-            <textarea id="newFakeNewsContent" rows="2" placeholder="Isi berita..."></textarea>
-            <button id="addFakeNewsBtn" class="primary" style="background:#999;">Tambah Demo</button>
-            <div id="fakeNewsList"></div>
-
-            <button id="fakeSaveBtn" class="primary" style="background:#999; width:100%; margin-top:1rem;">💾 SIMPAN (Demo)</button>
-            <div class="fake-warning" style="margin-top:10px;">
-                <i class="fas fa-database"></i> Mode Demo - Data tidak akan tersimpan secara permanen
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
-    const ADMIN_PASSWORD = "hanif123$";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
+    
+    // Load password dari localStorage, jika ada gunakan itu, jika tidak pakai default
+    let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
+    if (!ADMIN_PASSWORD) {
+        ADMIN_PASSWORD = "hanif123$";
+        localStorage.setItem('adminPassword', ADMIN_PASSWORD);
+    }
     
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
@@ -686,14 +660,6 @@
         products: [],
         news: [],
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
-    };
-    
-    // Data untuk panel palsu (copy dari data asli)
-    let fakeBusinessData = {
-        owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
-        facilities: [],
-        products: [],
-        news: []
     };
     
     // ========== SISTEM NOTIFIKASI ==========
@@ -709,7 +675,12 @@
     
     function showBrowserNotification(title, body) {
         if ('Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification(title, { body: body, icon: 'https://placehold.co/100x100/d9a13b/white?text=UD', silent: false });
+            const notification = new Notification(title, {
+                body: body,
+                icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
+                silent: false,
+                requireInteraction: false
+            });
             setTimeout(() => notification.close(), 5000);
         }
     }
@@ -806,7 +777,7 @@
         }
     }
     
-    // ========== FUNGSI JAM ==========
+    // ========== JAM DIGITAL ==========
     function updateDigitalClock() {
         const now = new Date();
         document.getElementById('clockTime').innerHTML = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
@@ -908,9 +879,6 @@
                 if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat | Free Ongkir Bragolan";
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
                 
-                // Update data palsu dengan copy dari data asli (biar mirip)
-                updateFakeDataFromReal();
-                
                 if (lastFacilityCount !== -1 && lastNewsCount !== -1) {
                     checkNewData();
                 } else {
@@ -928,13 +896,6 @@
             hideLoadingAndShowContent();
         }
         updateJamOperasional();
-    }
-    
-    function updateFakeDataFromReal() {
-        fakeBusinessData.owner = { ...businessData.owner };
-        fakeBusinessData.facilities = JSON.parse(JSON.stringify(businessData.facilities));
-        fakeBusinessData.products = JSON.parse(JSON.stringify(businessData.products));
-        fakeBusinessData.news = JSON.parse(JSON.stringify(businessData.news));
     }
     
     async function saveToDrive() {
@@ -1013,14 +974,14 @@
     
     function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
     
-    // ========== ADMIN ASLI ==========
+    // ========== ADMIN PANEL ==========
     function renderAdminLists() {
         const adminFacDiv = document.getElementById('adminFacilitiesList');
         if(adminFacDiv) {
             adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
             if(businessData.facilities.length === 0) adminFacDiv.innerHTML += "<em>Belum ada fasilitas</em>";
             businessData.facilities.forEach((f,i) => {
-                adminFacDiv.innerHTML += `<div class="admin-list-item" data-idx="${i}">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
+                adminFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
             });
         }
         const adminProdDiv = document.getElementById('adminProductsList');
@@ -1028,7 +989,7 @@
             adminProdDiv.innerHTML = "<strong>Produk:</strong>";
             if(businessData.products.length === 0) adminProdDiv.innerHTML += "<em>Belum ada produk</em>";
             businessData.products.forEach((p,i) => {
-                adminProdDiv.innerHTML += `<div class="admin-list-item" data-idx="${i}">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
+                adminProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
             });
         }
         const adminNewsDiv = document.getElementById('adminNewsList');
@@ -1036,7 +997,7 @@
             adminNewsDiv.innerHTML = "<strong>Berita:</strong>";
             if(businessData.news.length === 0) adminNewsDiv.innerHTML += "<em>Belum ada berita</em>";
             businessData.news.forEach((n,i) => {
-                adminNewsDiv.innerHTML += `<div class="admin-list-item" data-idx="${i}">📰 ${escapeHtml(n.title)} <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white;">Hapus</button></div>`;
+                adminNewsDiv.innerHTML += `<div class="admin-list-item">📰 ${escapeHtml(n.title)} <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white;">Hapus</button></div>`;
             });
         }
         document.getElementById('editOwnerName').value = businessData.owner.name || "";
@@ -1048,139 +1009,49 @@
     
     function attachAdminEvents() {
         document.querySelectorAll(".delFac").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.facilities.splice(idx, 1);
-                renderAdminLists();
-                saveToDrive();
-                renderPublic();
-                showToast("✅ Fasilitas dihapus");
-            };
+            btn.onclick = () => { businessData.facilities.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
         document.querySelectorAll(".delProd").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.products.splice(idx, 1);
-                renderAdminLists();
-                saveToDrive();
-                renderPublic();
-                showToast("✅ Produk dihapus");
-            };
+            btn.onclick = () => { businessData.products.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
         document.querySelectorAll(".delNews").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.news.splice(idx, 1);
-                renderAdminLists();
-                saveToDrive();
-                renderPublic();
-                showToast("✅ Berita dihapus");
-            };
+            btn.onclick = () => { businessData.news.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
         });
     }
     
-    // ========== ADMIN PALSU (HONEYPOT) - Menjiplak data asli ==========
-    function renderFakeLists() {
-        const fakeFacDiv = document.getElementById('fakeFacilitiesList');
-        if(fakeFacDiv) {
-            fakeFacDiv.innerHTML = "<strong>Fasilitas:</strong><br>";
-            if(fakeBusinessData.facilities.length === 0) fakeFacDiv.innerHTML += "<em>Belum ada fasilitas</em>";
-            fakeBusinessData.facilities.forEach((f,i) => {
-                fakeFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFakeFac" data-idx="${i}" style="background:#999; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
-            });
+    // ========== FUNGSI GANTI PASSWORD ==========
+    let changePassVisible = false;
+    
+    function toggleChangePass() {
+        const section = document.getElementById('changePassSection');
+        changePassVisible = !changePassVisible;
+        section.style.display = changePassVisible ? 'block' : 'none';
+    }
+    
+    function saveNewPassword() {
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+        if (!newPass) {
+            showToast("Password baru tidak boleh kosong");
+            return;
         }
-        const fakeProdDiv = document.getElementById('fakeProductsList');
-        if(fakeProdDiv) {
-            fakeProdDiv.innerHTML = "<strong>Produk:</strong><br>";
-            if(fakeBusinessData.products.length === 0) fakeProdDiv.innerHTML += "<em>Belum ada produk</em>";
-            fakeBusinessData.products.forEach((p,i) => {
-                fakeProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delFakeProd" data-idx="${i}" style="background:#999; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
-            });
+        if (newPass !== confirmPass) {
+            showToast("Konfirmasi password tidak cocok");
+            return;
         }
-        const fakeNewsDiv = document.getElementById('fakeNewsList');
-        if(fakeNewsDiv) {
-            fakeNewsDiv.innerHTML = "<strong>Berita:</strong><br>";
-            if(fakeBusinessData.news.length === 0) fakeNewsDiv.innerHTML += "<em>Belum ada berita</em>";
-            fakeBusinessData.news.forEach((n,i) => {
-                fakeNewsDiv.innerHTML += `<div class="admin-list-item">📰 ${escapeHtml(n.title)} <button class="delFakeNews" data-idx="${i}" style="background:#999; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
-            });
-        }
-        document.getElementById('fakeOwnerName').value = fakeBusinessData.owner.name || "";
-        document.getElementById('fakeOwnerPhone').value = fakeBusinessData.owner.phone || "";
-        document.getElementById('fakeOwnerEmail').value = fakeBusinessData.owner.email || "";
-        document.getElementById('fakeOwnerAddress').value = fakeBusinessData.owner.address || "";
+        ADMIN_PASSWORD = newPass;
+        localStorage.setItem('adminPassword', newPass);
+        showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
+        toggleChangePass();
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
         
-        // Event hapus di panel palsu (hanya simulasi)
-        document.querySelectorAll(".delFakeFac").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                fakeBusinessData.facilities.splice(idx, 1);
-                renderFakeLists();
-                showToast("⚠️ Demo: Fasilitas dihapus (tidak tersimpan permanen)");
-            };
-        });
-        document.querySelectorAll(".delFakeProd").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                fakeBusinessData.products.splice(idx, 1);
-                renderFakeLists();
-                showToast("⚠️ Demo: Produk dihapus (tidak tersimpan permanen)");
-            };
-        });
-        document.querySelectorAll(".delFakeNews").forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                fakeBusinessData.news.splice(idx, 1);
-                renderFakeLists();
-                showToast("⚠️ Demo: Berita dihapus (tidak tersimpan permanen)");
-            };
-        });
+        // Optional: tutup modal agar user login ulang
+        document.getElementById('adminModal').style.display = 'none';
+        setTimeout(() => {
+            showToast("Silakan login kembali dengan password baru Anda");
+        }, 1000);
     }
-    
-    document.getElementById('addFakeFacilityBtn').onclick = () => {
-        let name = document.getElementById('newFakeFacilityName').value.trim();
-        if(name) {
-            fakeBusinessData.facilities.push({ name: name });
-            renderFakeLists();
-            showToast("⚠️ Demo: Fasilitas ditambahkan (tidak tersimpan)");
-            document.getElementById('newFakeFacilityName').value = '';
-        }
-    };
-    document.getElementById('addFakeProductBtn').onclick = () => {
-        let name = document.getElementById('newFakeProductName').value.trim();
-        let price = document.getElementById('newFakeProductPrice').value;
-        if(name) {
-            fakeBusinessData.products.push({ name: name, price: price });
-            renderFakeLists();
-            showToast("⚠️ Demo: Produk ditambahkan (tidak tersimpan)");
-            document.getElementById('newFakeProductName').value = '';
-            document.getElementById('newFakeProductPrice').value = '';
-        }
-    };
-    document.getElementById('addFakeNewsBtn').onclick = () => {
-        let title = document.getElementById('newFakeNewsTitle').value.trim();
-        let content = document.getElementById('newFakeNewsContent').value;
-        if(title) {
-            fakeBusinessData.news.push({ title: title, content: content });
-            renderFakeLists();
-            showToast("⚠️ Demo: Berita ditambahkan (tidak tersimpan)");
-            document.getElementById('newFakeNewsTitle').value = '';
-            document.getElementById('newFakeNewsContent').value = '';
-        }
-    };
-    document.getElementById('fakeSaveBtn').onclick = () => {
-        fakeBusinessData.owner.name = document.getElementById('fakeOwnerName').value;
-        fakeBusinessData.owner.phone = document.getElementById('fakeOwnerPhone').value;
-        fakeBusinessData.owner.email = document.getElementById('fakeOwnerEmail').value;
-        fakeBusinessData.owner.address = document.getElementById('fakeOwnerAddress').value;
-        showToast("⚠️ Demo: Data tidak benar-benar tersimpan (mode demo)");
-    };
     
     // ========== EVENT LISTENERS ==========
     const notificationBell = document.getElementById('notificationBell');
@@ -1194,9 +1065,29 @@
     
     document.getElementById('adminPanelBtn').onclick = () => document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').style.display = 'none';
-    document.getElementById('closeFakeModal').onclick = () => document.getElementById('fakeAdminModal').style.display = 'none';
     
-    // VERIFIKASI ASLI - Password benar masuk panel asli
+    // Tombol ganti password di halaman login
+    const forgotOrChangeLink = document.getElementById('forgotOrChangeLink');
+    if (forgotOrChangeLink) {
+        forgotOrChangeLink.onclick = (e) => {
+            e.preventDefault();
+            toggleChangePass();
+        };
+    }
+    
+    // Tombol ganti password dari dalam panel
+    const changePassFromInside = document.getElementById('changePassFromInside');
+    if (changePassFromInside) {
+        changePassFromInside.onclick = (e) => {
+            e.preventDefault();
+            toggleChangePass();
+        };
+    }
+    
+    document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
+    document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
+    
+    // VERIFIKASI LOGIN
     document.getElementById('verifyAdminBtn').onclick = () => {
         const inputPass = document.getElementById('adminPassword').value;
         if(inputPass === ADMIN_PASSWORD) {
@@ -1205,23 +1096,8 @@
             renderAdminLists();
             attachAdminEvents();
         } else {
-            // Password salah -> buka panel palsu (honeypot)
-            document.getElementById('adminModal').style.display = 'none';
-            document.getElementById('fakeAdminModal').style.display = 'flex';
-            // Update data palsu dari data asli terbaru
-            updateFakeDataFromReal();
-            renderFakeLists();
-            showToast("⚠️ Akses terbatas - Mode Demo");
+            alert("Password salah!");
         }
-    };
-    
-    // VERIFIKASI PALSU - password apapun bisa masuk (jebakan)
-    document.getElementById('verifyFakeBtn').onclick = () => {
-        document.getElementById('fakeAuthSection').style.display = 'none';
-        document.getElementById('fakePanelContent').style.display = 'block';
-        updateFakeDataFromReal();
-        renderFakeLists();
-        showToast("⚠️ Mode Demo: Anda dapat melihat data, tetapi perubahan tidak akan tersimpan");
     };
     
     // TOMBOL ADMIN ASLI
@@ -1325,6 +1201,7 @@
         const filteredFacilities = businessData.facilities.filter(f => f.name.toLowerCase().includes(kw));
         const filteredProducts = businessData.products.filter(p => p.name.toLowerCase().includes(kw) || (p.price && p.price.toLowerCase().includes(kw)));
         const filteredNews = businessData.news.filter(n => n.title.toLowerCase().includes(kw) || n.content.toLowerCase().includes(kw));
+        
         document.getElementById('ownerNameSpan').innerText = businessData.owner.name || "";
         document.getElementById('ownerPhoneSpan').innerText = businessData.owner.phone || "-";
         document.getElementById('ownerEmailSpan').innerText = businessData.owner.email || "-";
@@ -1349,7 +1226,7 @@
     };
     
     document.getElementById('resetSearchBtn').onclick = () => { location.reload(); };
-    window.onclick = (e) => { if(e.target === document.getElementById('adminModal')) document.getElementById('adminModal').style.display = 'none'; if(e.target === document.getElementById('fakeAdminModal')) document.getElementById('fakeAdminModal').style.display = 'none'; };
+    window.onclick = (e) => { if(e.target === document.getElementById('adminModal')) document.getElementById('adminModal').style.display = 'none'; };
     window.closeNewsDetail = closeNewsDetail;
     window.closeZoomModal = closeZoomModal;
     window.openNewsDetail = openNewsDetail;
