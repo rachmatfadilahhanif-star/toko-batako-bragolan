@@ -263,7 +263,6 @@
             font-weight: 500;
         }
         
-        /* MODAL ASLI */
         .modal {
             display: none;
             position: fixed;
@@ -410,7 +409,6 @@
         .news-detail-meta { font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
         .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; overflow-y: auto; max-height: 60vh; }
         
-        /* GANTI PASSWORD SECTION */
         .change-pass-section {
             background: #e8f5e9;
             padding: 1rem;
@@ -418,22 +416,10 @@
             margin-bottom: 1rem;
             display: none;
         }
-        .change-pass-section input {
-            margin: 0.5rem 0;
-        }
-        .security-link {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 0.8rem;
-        }
-        .security-link a {
-            color: #5c3e2b;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .security-link a:hover {
-            text-decoration: underline;
-        }
+        .change-pass-section input { margin: 0.5rem 0; }
+        .security-link { text-align: center; margin-top: 10px; font-size: 0.8rem; }
+        .security-link a { color: #5c3e2b; text-decoration: none; cursor: pointer; }
+        .security-link a:hover { text-decoration: underline; }
         
         @media (max-width: 700px) {
             body { font-size: 16px; }
@@ -493,7 +479,6 @@
         <button id="resetSearchBtn">Reset</button>
     </div>
 
-    <!-- PROFIL PEMILIK -->
     <div class="card">
         <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
         <div class="profile-wrapper">
@@ -509,25 +494,21 @@
         </div>
     </div>
 
-    <!-- FASILITAS -->
     <div class="card">
         <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
-    <!-- PRODUK -->
     <div class="card">
         <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
         <div id="productsList" class="grid-3"></div>
     </div>
 
-    <!-- BERITA -->
     <div class="card">
         <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
         <div id="newsList"></div>
     </div>
 
-    <!-- LOKASI & JAM -->
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
@@ -563,13 +544,11 @@
     </footer>
 </div>
 
-<!-- MODAL ZOOM -->
 <div id="zoomModal" class="zoom-modal" onclick="closeZoomModal()">
     <span class="zoom-close" onclick="closeZoomModal()">&times;</span>
     <img id="zoomImage" src="" alt="Zoom">
 </div>
 
-<!-- MODAL BACA BERITA -->
 <div id="newsDetailModal" class="news-detail-modal">
     <div class="news-detail-content">
         <span class="news-detail-close" onclick="closeNewsDetail()">&times;</span>
@@ -580,16 +559,13 @@
     </div>
 </div>
 
-<!-- MODAL ADMIN DENGAN FITUR GANTI PASSWORD -->
 <div id="adminModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h2><i class="fas fa-crown"></i> Panel Admin</h2><span class="close-modal" id="closeAdminModal">&times;</span></div>
         <div id="adminAuthSection">
             <input type="password" id="adminPassword" placeholder="Password">
             <button id="verifyAdminBtn" class="primary">Verifikasi</button>
-            <div class="security-link">
-                <a id="forgotOrChangeLink">🔐 Ganti Password</a>
-            </div>
+            <div class="security-link"><a id="forgotOrChangeLink">🔐 Ganti Password</a></div>
         </div>
         <div id="adminPanelContent" style="display:none;">
             <div class="change-pass-section" id="changePassSection">
@@ -647,7 +623,6 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
-    // Load password dari localStorage, jika ada gunakan itu, jika tidak pakai default
     let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
     if (!ADMIN_PASSWORD) {
         ADMIN_PASSWORD = "hanif123$";
@@ -662,26 +637,47 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== SISTEM NOTIFIKASI ==========
+    // ========== NOTIFIKASI (DIPERBAIKI) ==========
     let notifications = [];
     let lastFacilityCount = -1;
     let lastNewsCount = -1;
+    let notifPermissionRequested = false;
     
     function requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
+        if (!('Notification' in window)) {
+            console.log("Browser tidak mendukung notifikasi");
+            return;
         }
+        if (Notification.permission === 'granted') return;
+        if (Notification.permission === 'denied') return;
+        
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
+                // Kirim notifikasi uji coba
+                setTimeout(() => {
+                    new Notification("Notifikasi Aktif!", {
+                        body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
+                        icon: "https://placehold.co/100x100/d9a13b/white?text=UD",
+                        silent: false
+                    });
+                }, 1000);
+            }
+        });
     }
     
     function showBrowserNotification(title, body) {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification(title, {
-                body: body,
-                icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
-                silent: false,
-                requireInteraction: false
-            });
-            setTimeout(() => notification.close(), 5000);
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') {
+            try {
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
+                    silent: false,
+                    vibrate: [200, 100, 200]
+                });
+                setTimeout(() => notification.close(), 8000);
+            } catch(e) { console.log("Notif error:", e); }
         }
     }
     
@@ -693,6 +689,7 @@
         updateNotificationBadge();
         renderNotificationPanel();
         showBrowserNotification(title, message);
+        showToast(`🔔 ${title}: ${message}`);
     }
     
     function updateNotificationBadge() {
@@ -716,7 +713,7 @@
             return;
         }
         container.innerHTML = '';
-        notifications.forEach(notif => {
+        notifications.slice(0, 20).forEach(notif => {
             const div = document.createElement('div');
             div.className = `notification-item ${!notif.read ? 'unread' : ''}`;
             div.innerHTML = `<div class="notification-title">${escapeHtml(notif.title)}</div><div class="notification-desc">${escapeHtml(notif.message)}</div><div class="notification-time">${formatTimeAgo(notif.time)}</div>`;
@@ -737,28 +734,32 @@
     }
     
     function checkNewData() {
+        let hasNew = false;
         if (lastFacilityCount !== -1 && businessData.facilities && businessData.facilities.length > lastFacilityCount) {
             const newCount = businessData.facilities.length - lastFacilityCount;
             for (let i = 0; i < newCount; i++) {
-                const newFacility = businessData.facilities[businessData.facilities.length - 1 - i];
-                if (newFacility && !newFacility._notified) {
-                    addNotification('🏭 Fasilitas Baru', `Fasilitas "${newFacility.name}" telah ditambahkan`, 'facility', 'facilitiesList');
-                    newFacility._notified = true;
+                const newItem = businessData.facilities[businessData.facilities.length - 1 - i];
+                if (newItem && !newItem._notified) {
+                    addNotification('🏭 Fasilitas Baru', `Fasilitas "${newItem.name}" telah ditambahkan`, 'facility', 'facilitiesList');
+                    newItem._notified = true;
+                    hasNew = true;
                 }
             }
         }
         if (lastNewsCount !== -1 && businessData.news && businessData.news.length > lastNewsCount) {
             const newCount = businessData.news.length - lastNewsCount;
             for (let i = 0; i < newCount; i++) {
-                const newNews = businessData.news[i];
-                if (newNews && !newNews._notified) {
-                    addNotification('📰 Berita Baru', `"${newNews.title}" - ${newNews.content.substring(0, 40)}${newNews.content.length > 40 ? '...' : ''}`, 'news', 'newsList');
-                    newNews._notified = true;
+                const newItem = businessData.news[i];
+                if (newItem && !newItem._notified) {
+                    addNotification('📰 Berita Baru', `"${newItem.title}" - ${newItem.content.substring(0, 50)}${newItem.content.length > 50 ? '...' : ''}`, 'news', 'newsList');
+                    newItem._notified = true;
+                    hasNew = true;
                 }
             }
         }
         lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
         lastNewsCount = businessData.news ? businessData.news.length : 0;
+        return hasNew;
     }
     
     function resetNotificationCounters() {
@@ -809,6 +810,14 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                // Tampilkan popup minta izin notifikasi setelah konten dimuat
+                setTimeout(() => {
+                    if (Notification && Notification.permission === 'default') {
+                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
+                        if (result) requestNotificationPermission();
+                    }
+                }, 2000);
             }, 500);
         }
     }
@@ -841,17 +850,25 @@
         toast.className = 'toast';
         toast.innerHTML = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2500);
+        setTimeout(() => toast.remove(), 3000);
     }
     
+    // ========== ZOOM GAMBAR (DIPERBAIKI) ==========
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
-        if(imageUrl) {
-            document.getElementById('zoomImage').src = imageUrl;
+        const zoomImg = document.getElementById('zoomImage');
+        if (imageUrl && imageUrl !== '' && (imageUrl.startsWith('data:image') || imageUrl.startsWith('http'))) {
+            zoomImg.src = imageUrl;
             modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        } else {
+            showToast("Gambar tidak tersedia untuk dizoom");
         }
     }
-    function closeZoomModal() { document.getElementById('zoomModal').style.display = 'none'; }
+    function closeZoomModal() { 
+        document.getElementById('zoomModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
     
     function openNewsDetail(news) {
         const modal = document.getElementById('newsDetailModal');
@@ -892,8 +909,10 @@
                 hideLoadingAndShowContent();
             }
         } catch(e) {
+            console.error("Load error:", e);
             renderPublic();
             hideLoadingAndShowContent();
+            showToast("⚠️ Menggunakan data lokal");
         }
         updateJamOperasional();
     }
@@ -926,45 +945,55 @@
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
         if(businessData.owner.photoUrl) {
-            document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
-            document.getElementById("ownerPhotoImg").onclick = () => openZoomModal(businessData.owner.photoUrl);
+            const ownerImg = document.getElementById("ownerPhotoImg");
+            ownerImg.src = businessData.owner.photoUrl;
+            ownerImg.onclick = () => openZoomModal(businessData.owner.photoUrl);
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
+        // FASILITAS - dengan ZOOM
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(businessData.facilities && businessData.facilities.length > 0) {
             businessData.facilities.forEach(f => {
                 let div = document.createElement("div");
                 div.className = "item-card";
-                div.innerHTML = `${f.photoUrl ? `<img src="${f.photoUrl}" class="item-img">` : `<div class="item-img"><i class="fas fa-industry fa-3x"></i></div>`}<div class="item-name">${escapeHtml(f.name)}</div>`;
+                div.innerHTML = `${f.photoUrl ? `<img src="${f.photoUrl}" class="item-img" loading="lazy">` : `<div class="item-img"><i class="fas fa-industry fa-3x"></i></div>`}<div class="item-name">${escapeHtml(f.name)}</div>`;
+                const img = div.querySelector('.item-img');
+                if (img && img.tagName === 'IMG') img.onclick = (e) => { e.stopPropagation(); openZoomModal(f.photoUrl); };
                 facilitiesDiv.appendChild(div);
             });
         } else {
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         }
         
+        // PRODUK - dengan ZOOM
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(businessData.products && businessData.products.length > 0) {
             businessData.products.forEach(p => {
                 let div = document.createElement("div");
                 div.className = "item-card";
-                div.innerHTML = `${p.photoUrl ? `<img src="${p.photoUrl}" class="item-img">` : `<div class="item-img"><i class="fas fa-brick fa-3x"></i></div>`}<div class="item-name">${escapeHtml(p.name)}</div><div class="item-price">💰 ${escapeHtml(p.price) || "Hubungi CS"}</div>`;
+                div.innerHTML = `${p.photoUrl ? `<img src="${p.photoUrl}" class="item-img" loading="lazy">` : `<div class="item-img"><i class="fas fa-brick fa-3x"></i></div>`}<div class="item-name">${escapeHtml(p.name)}</div><div class="item-price">💰 ${escapeHtml(p.price) || "Hubungi CS"}</div>`;
+                const img = div.querySelector('.item-img');
+                if (img && img.tagName === 'IMG') img.onclick = (e) => { e.stopPropagation(); openZoomModal(p.photoUrl); };
                 productsDiv.appendChild(div);
             });
         } else {
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         }
         
+        // BERITA - dengan ZOOM pada gambar
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(businessData.news && businessData.news.length > 0) {
             businessData.news.forEach(n => {
                 let div = document.createElement("div");
                 div.className = "news-card";
-                div.innerHTML = `${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img">` : ''}<div class="news-title">📢 ${escapeHtml(n.title)}</div><div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(n.date).toLocaleDateString('id-ID')}</div><div class="news-content">${escapeHtml(n.content.length > 150 ? n.content.substring(0,150) + '...' : n.content)}</div><div class="read-more">Klik untuk baca selengkapnya →</div>`;
-                div.onclick = () => openNewsDetail(n);
+                div.innerHTML = `${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img" loading="lazy">` : ''}<div class="news-title">📢 ${escapeHtml(n.title)}</div><div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(n.date).toLocaleDateString('id-ID')}</div><div class="news-content">${escapeHtml(n.content.length > 150 ? n.content.substring(0,150) + '...' : n.content)}</div><div class="read-more">Klik untuk baca selengkapnya →</div>`;
+                const img = div.querySelector('.news-img');
+                if (img) img.onclick = (e) => { e.stopPropagation(); openZoomModal(n.imageUrl); };
+                div.onclick = (e) => { if (e.target !== img) openNewsDetail(n); };
                 newsDiv.appendChild(div);
             });
         } else {
@@ -1005,52 +1034,63 @@
         document.getElementById('editOwnerEmail').value = businessData.owner.email || "";
         document.getElementById('editOwnerAddress').value = businessData.owner.address || "";
         document.getElementById('editRunningText').value = businessData.runningText || "";
+        
+        attachAdminEvents();
     }
     
     function attachAdminEvents() {
         document.querySelectorAll(".delFac").forEach(btn => {
-            btn.onclick = () => { businessData.facilities.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.facilities.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Fasilitas dihapus");
+            };
         });
         document.querySelectorAll(".delProd").forEach(btn => {
-            btn.onclick = () => { businessData.products.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.products.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Produk dihapus");
+            };
         });
         document.querySelectorAll(".delNews").forEach(btn => {
-            btn.onclick = () => { businessData.news.splice(parseInt(btn.dataset.idx),1); renderAdminLists(); saveToDrive(); renderPublic(); };
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.news.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Berita dihapus");
+            };
         });
     }
     
-    // ========== FUNGSI GANTI PASSWORD ==========
+    // ========== GANTI PASSWORD ==========
     let changePassVisible = false;
-    
     function toggleChangePass() {
         const section = document.getElementById('changePassSection');
         changePassVisible = !changePassVisible;
         section.style.display = changePassVisible ? 'block' : 'none';
     }
-    
     function saveNewPassword() {
         const newPass = document.getElementById('newPassword').value;
         const confirmPass = document.getElementById('confirmPassword').value;
-        if (!newPass) {
-            showToast("Password baru tidak boleh kosong");
-            return;
-        }
-        if (newPass !== confirmPass) {
-            showToast("Konfirmasi password tidak cocok");
-            return;
-        }
+        if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
+        if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
         ADMIN_PASSWORD = newPass;
         localStorage.setItem('adminPassword', newPass);
         showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
         toggleChangePass();
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
-        
-        // Optional: tutup modal agar user login ulang
         document.getElementById('adminModal').style.display = 'none';
-        setTimeout(() => {
-            showToast("Silakan login kembali dengan password baru Anda");
-        }, 1000);
+        setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
     }
     
     // ========== EVENT LISTENERS ==========
@@ -1066,41 +1106,25 @@
     document.getElementById('adminPanelBtn').onclick = () => document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').style.display = 'none';
     
-    // Tombol ganti password di halaman login
     const forgotOrChangeLink = document.getElementById('forgotOrChangeLink');
-    if (forgotOrChangeLink) {
-        forgotOrChangeLink.onclick = (e) => {
-            e.preventDefault();
-            toggleChangePass();
-        };
-    }
-    
-    // Tombol ganti password dari dalam panel
+    if (forgotOrChangeLink) forgotOrChangeLink.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
     const changePassFromInside = document.getElementById('changePassFromInside');
-    if (changePassFromInside) {
-        changePassFromInside.onclick = (e) => {
-            e.preventDefault();
-            toggleChangePass();
-        };
-    }
-    
+    if (changePassFromInside) changePassFromInside.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
     document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
     document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
     
-    // VERIFIKASI LOGIN
     document.getElementById('verifyAdminBtn').onclick = () => {
         const inputPass = document.getElementById('adminPassword').value;
         if(inputPass === ADMIN_PASSWORD) {
             document.getElementById('adminAuthSection').style.display = 'none';
             document.getElementById('adminPanelContent').style.display = 'block';
             renderAdminLists();
-            attachAdminEvents();
         } else {
             alert("Password salah!");
         }
     };
     
-    // TOMBOL ADMIN ASLI
+    // TOMBOL ADMIN
     document.getElementById('addFacilityBtn').onclick = () => {
         let name = document.getElementById('newFacilityName').value.trim();
         let file = document.getElementById('newFacilityPhoto').files[0];
@@ -1231,7 +1255,6 @@
     window.closeZoomModal = closeZoomModal;
     window.openNewsDetail = openNewsDetail;
     
-    setTimeout(() => { requestNotificationPermission(); }, 2000);
     loadNotifications();
     loadData();
 </script>
