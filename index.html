@@ -583,7 +583,7 @@
                     <tr><td>Rabu</td><td>07.00 – 21.00</td>
                     <tr>.<td>Kamis</td><td>07.00 – 21.00</td>
                     </td>.<td>Jumat</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
+                    </tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
                     <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
@@ -685,37 +685,32 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== SISTEM NOTIFIKASI ==========
+    // ========== SISTEM NOTIFIKASI (HANYA UNTUK DATA BARU) ==========
     let notifications = [];
-    let lastFacilityCount = 0;
-    let lastNewsCount = 0;
+    let lastFacilityCount = -1;   // -1 artinya belum pernah di-set
+    let lastNewsCount = -1;        // -1 artinya belum pernah di-set
     
-    // Minta izin notifikasi browser
+    // Minta izin notifikasi browser (hanya sekali)
     function requestNotificationPermission() {
-        if ('Notification' in window) {
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
     }
     
-    // Tampilkan notifikasi browser
-    function showBrowserNotification(title, body, url) {
+    // Tampilkan notifikasi browser (HANYA untuk data BARU)
+    function showBrowserNotification(title, body) {
         if ('Notification' in window && Notification.permission === 'granted') {
             const notification = new Notification(title, {
                 body: body,
                 icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
-                requireInteraction: true
+                silent: false,
+                requireInteraction: false
             });
-            notification.onclick = function() {
-                window.focus();
-                if (url) window.location.href = url;
-                notification.close();
-            };
+            setTimeout(() => notification.close(), 5000);
         }
     }
     
-    // Tambah notifikasi ke panel
+    // Tambah notifikasi ke panel (HANYA untuk data BARU)
     function addNotification(title, message, type, itemId) {
         const id = Date.now();
         notifications.unshift({
@@ -733,8 +728,8 @@
         updateNotificationBadge();
         renderNotificationPanel();
         
-        // Tampilkan browser notification
-        showBrowserNotification(title, message, window.location.href);
+        // Tampilkan notifikasi browser
+        showBrowserNotification(title, message);
     }
     
     // Update badge notifikasi
@@ -755,7 +750,7 @@
         if (!container) return;
         
         if (notifications.length === 0) {
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">Tidak ada notifikasi</div>';
+            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">Tidak ada notifikasi baru</div>';
             return;
         }
         
@@ -773,11 +768,6 @@
                 localStorage.setItem('notifications', JSON.stringify(notifications));
                 updateNotificationBadge();
                 renderNotificationPanel();
-                // Scroll ke item terkait jika ada ID
-                if (notif.itemId) {
-                    const element = document.getElementById(notif.itemId);
-                    if (element) element.scrollIntoView({ behavior: 'smooth' });
-                }
             };
             container.appendChild(div);
         });
@@ -794,40 +784,53 @@
         return `${days} hari lalu`;
     }
     
-    // Cek perubahan data (fasilitas & berita baru)
+    // Cek perubahan data (HANYA untuk data yang BENAR-BENAR BARU setelah load pertama)
     function checkNewData() {
-        // Cek fasilitas baru
-        if (businessData.facilities && businessData.facilities.length > lastFacilityCount) {
-            const newCount = businessData.facilities.length - lastFacilityCount;
-            for (let i = 0; i < newCount; i++) {
-                const newFacility = businessData.facilities[businessData.facilities.length - 1 - i];
-                if (newFacility) {
-                    addNotification(
-                        '🏭 Fasilitas Baru',
-                        `Fasilitas "${newFacility.name}" telah ditambahkan`,
-                        'facility',
-                        'facilitiesList'
-                    );
+        // Hanya jalankan jika sudah pernah di-set sebelumnya (bukan pertama kali)
+        if (lastFacilityCount !== -1) {
+            // Cek fasilitas baru
+            if (businessData.facilities && businessData.facilities.length > lastFacilityCount) {
+                const newCount = businessData.facilities.length - lastFacilityCount;
+                for (let i = 0; i < newCount; i++) {
+                    const newFacility = businessData.facilities[businessData.facilities.length - 1 - i];
+                    if (newFacility && !newFacility._notified) {
+                        addNotification(
+                            '🏭 Fasilitas Baru',
+                            `Fasilitas "${newFacility.name}" telah ditambahkan`,
+                            'facility',
+                            'facilitiesList'
+                        );
+                        newFacility._notified = true;
+                    }
+                }
+            }
+            
+            // Cek berita baru
+            if (businessData.news && businessData.news.length > lastNewsCount) {
+                const newCount = businessData.news.length - lastNewsCount;
+                for (let i = 0; i < newCount; i++) {
+                    const newNews = businessData.news[i];
+                    if (newNews && !newNews._notified) {
+                        addNotification(
+                            '📰 Berita Baru',
+                            `"${newNews.title}" - ${newNews.content.substring(0, 40)}${newNews.content.length > 40 ? '...' : ''}`,
+                            'news',
+                            'newsList'
+                        );
+                        newNews._notified = true;
+                    }
                 }
             }
         }
-        lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
         
-        // Cek berita baru
-        if (businessData.news && businessData.news.length > lastNewsCount) {
-            const newCount = businessData.news.length - lastNewsCount;
-            for (let i = 0; i < newCount; i++) {
-                const newNews = businessData.news[i];
-                if (newNews) {
-                    addNotification(
-                        '📰 Berita Baru',
-                        `"${newNews.title}" - ${newNews.content.substring(0, 50)}${newNews.content.length > 50 ? '...' : ''}`,
-                        'news',
-                        'newsList'
-                    );
-                }
-            }
-        }
+        // Update counter untuk pengecekan berikutnya
+        lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
+        lastNewsCount = businessData.news ? businessData.news.length : 0;
+    }
+    
+    // Reset counter notifikasi (dipanggil setelah load data selesai)
+    function resetNotificationCounters() {
+        lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
         lastNewsCount = businessData.news ? businessData.news.length : 0;
     }
     
@@ -948,8 +951,13 @@
                 if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat | Free Ongkir Bragolan";
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
                 
-                // Cek data baru
-                checkNewData();
+                // HANYA CEK DATA BARU jika sudah pernah load sebelumnya
+                if (lastFacilityCount !== -1 && lastNewsCount !== -1) {
+                    checkNewData();
+                } else {
+                    // Reset counter untuk pertama kali (tidak akan mengirim notifikasi untuk data lama)
+                    resetNotificationCounters();
+                }
                 
                 renderPublic();
                 hideLoadingAndShowContent();
@@ -992,7 +1000,7 @@
             });
             showToast("✅ Data tersimpan");
             
-            // Reload data setelah simpan untuk update notifikasi
+            // Reload data setelah simpan
             setTimeout(() => loadData(), 1000);
         } catch(e) { 
             showToast("❌ Gagal simpan: " + e.message);
@@ -1288,10 +1296,10 @@
     
     setInterval(updateJamOperasional, 60000);
     
-    // Minta izin notifikasi saat halaman dimuat
+    // Minta izin notifikasi (hanya sekali)
     setTimeout(() => {
         requestNotificationPermission();
-    }, 1000);
+    }, 2000);
     
     // Load notifikasi dan data
     loadNotifications();
