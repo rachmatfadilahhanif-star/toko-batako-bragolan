@@ -14,6 +14,15 @@
             color: #2d2418;
             font-size: 18px;
         }
+        /* Nonaktifkan klik kanan */
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
         
         .running-area {
@@ -96,55 +105,6 @@
         }
         .clock-time { font-size: 1.3rem; font-weight: 700; color: #ffd89b; letter-spacing: 2px; }
         .clock-date { font-size: 0.7rem; color: #e8d5b5; margin-top: 0.2rem; }
-        
-        .notification-bell {
-            position: relative;
-            cursor: pointer;
-            background: #2d2418;
-            padding: 0.5rem 0.8rem;
-            border-radius: 2rem;
-            transition: all 0.2s;
-        }
-        .notification-bell:hover { background: #3d3226; }
-        .notification-bell i { font-size: 1.3rem; color: #ffd89b; }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #e74c3c;
-            color: white;
-            font-size: 0.6rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
-        }
-        .notification-panel {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            width: 320px;
-            max-height: 400px;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 1000;
-            overflow-y: auto;
-            display: none;
-        }
-        .notification-panel.show { display: block; }
-        .notification-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .notification-item:hover { background: #fef8ef; }
-        .notification-item.unread { background: #fff8e7; border-left: 3px solid #d9a13b; }
-        .notification-title { font-weight: 600; font-size: 0.9rem; color: #5c3e2b; }
-        .notification-desc { font-size: 0.75rem; color: #888; margin-top: 4px; }
-        .notification-time { font-size: 0.65rem; color: #aaa; margin-top: 4px; }
         
         .search-box {
             display: flex;
@@ -324,9 +284,6 @@
         .social-links a { color: #e8d5b5; text-decoration: none; font-size: 1.3rem; transition: 0.2s; }
         .social-links a:hover { color: #ffd89b; }
         
-        .status-open { color: #2e7d32; background: #e8f5e9; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
-        .status-closed { color: #c62828; background: #ffebee; display: inline-block; padding: 6px 12px; border-radius: 2rem; font-size: 0.85rem; }
-        
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             background: #2e7d32; color: white; padding: 12px 20px;
@@ -345,9 +302,46 @@
             font-size: 0.9rem;
         }
         .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
-        .hours-table td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        .hours-table td:first-child { font-weight: 600; width: 90px; }
-        .empty-state { text-align: center; padding: 2rem; color: #888; font-size: 0.95rem; }
+        
+        /* ========== JADWAL OPERASIONAL YANG CANTIK ========== */
+        .schedule-container {
+            background: #fef8ef;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .today-status {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .today-status.open { background: #e8f5e9; color: #2e7d32; }
+        .today-status.closed { background: #ffebee; color: #c62828; }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .schedule-table tr {
+            border-bottom: 1px solid #f0e4d0;
+        }
+        .schedule-table td {
+            padding: 12px 8px;
+        }
+        .schedule-table td:first-child {
+            font-weight: 600;
+            width: 100px;
+        }
+        .schedule-table .today {
+            background: #fff3e0;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            color: #d9a13b;
+        }
+        .schedule-table .closed-day {
+            color: #c62828;
+        }
         
         .zoom-modal {
             display: none;
@@ -409,18 +403,6 @@
         .news-detail-meta { font-size: 0.8rem; color: #999; margin-bottom: 1rem; }
         .news-detail-text { font-size: 1rem; line-height: 1.6; color: #333; overflow-y: auto; max-height: 60vh; }
         
-        .change-pass-section {
-            background: #e8f5e9;
-            padding: 1rem;
-            border-radius: 1rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-        .change-pass-section input { margin: 0.5rem 0; }
-        .security-link { text-align: center; margin-top: 10px; font-size: 0.8rem; }
-        .security-link a { color: #5c3e2b; text-decoration: none; cursor: pointer; }
-        .security-link a:hover { text-decoration: underline; }
-        
         @media (max-width: 700px) {
             body { font-size: 16px; }
             .navbar { flex-direction: column; text-align: center; }
@@ -431,11 +413,26 @@
             .news-title { font-size: 1rem; }
             .running-text { font-size: 0.9rem; animation-duration: 15s; }
             .digital-clock { margin-top: 0.5rem; }
-            .notification-panel { width: 280px; right: 10px; }
+            .schedule-table td { padding: 8px 4px; font-size: 0.85rem; }
+            .schedule-table td:first-child { width: 80px; }
         }
     </style>
 </head>
 <body>
+
+<!-- Nonaktifkan klik kanan -->
+<script>
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
 
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
@@ -451,21 +448,10 @@
             <h1><i class="fas fa-hard-hat"></i> UD Murah Meriah Bragolan</h1>
             <p>Toko Batako & Material | Harga Pabrik</p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="notification-bell" id="notificationBell">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-            </div>
-            <div class="digital-clock">
-                <div class="clock-time" id="clockTime">--:--:--</div>
-                <div class="clock-date" id="clockDate">---, -- --- ----</div>
-            </div>
+        <div class="digital-clock">
+            <div class="clock-time" id="clockTime">--:--:--</div>
+            <div class="clock-date" id="clockDate">---, -- --- ----</div>
         </div>
-    </div>
-    
-    <div id="notificationPanel" class="notification-panel">
-        <div style="padding: 10px; background: #f5f0e8; font-weight: bold; border-bottom: 1px solid #e0d0bc;">Notifikasi</div>
-        <div id="notificationList"></div>
     </div>
 
     <div class="running-area">
@@ -509,25 +495,38 @@
         <div id="newsList"></div>
     </div>
 
+    <!-- JADWAL OPERASIONAL YANG CANTIK -->
     <div class="card">
-        <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
+        <h2><i class="fas fa-clock"></i> Jam Operasional</h2>
+        <div class="schedule-container">
+            <div id="todayStatus" class="today-status"></div>
+            <table class="schedule-table">
+                <tr id="rowSenin"><td>Senin</td><td>07.00 – 21.30</td></tr>
+                <tr id="rowSelasa"><td>Selasa</td><td>07.00 – 21.00</td></tr>
+                <tr id="rowRabu"><td>Rabu</td><td>07.00 – 21.00</td></tr>
+                <tr id="rowKamis"><td>Kamis</td><td>07.00 – 21.00</td></tr>
+                <tr id="rowJumat"><td>Jumat</td><td>07.00 – 21.00</td></tr>
+                <tr id="rowSabtu"><td>Sabtu</td><td>07.00 – 21.00</td></tr>
+                <tr id="rowMinggu" style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
+            </table>
+            <p style="margin-top:12px; font-size:0.8rem; text-align:center;">
+                <i class="fas fa-truck"></i> Layanan: Antar Bragolan & Sekitarnya
+            </p>
+        </div>
+    </div>
+
+    <!-- LOKASI & MAPS -->
+    <div class="card">
+        <h2><i class="fas fa-map-marker-alt"></i> Lokasi Toko</h2>
         <div class="grid-2">
             <div>
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.8535!2d110.123456!3d-7.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7b9a2b3c4d5e6f%3A0x123456789abcdef!2sBragolan!5e0!3m2!1sid!2sid!4v1680000000000" width="100%" height="220" style="border-radius:1rem; border:0;" allowfullscreen loading="lazy"></iframe>
-                <p style="margin-top:8px;"><a href="https://maps.app.goo.gl/NVgQQLD65iUSYEi47" target="_blank">🗺️ Buka Maps Lengkap →</a></p>
             </div>
-            <div>
-                <div id="todayStatus" style="margin-bottom: 10px;"></div>
-                <table class="hours-table">
-                    <tr><td>Senin</td><td>07.00 – 21.30</td>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
-                    <tr><td>Rabu</td><td>07.00 – 21.00</td>
-                    </td>.<td>Kamis</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
-                </table>
-                <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.8rem; justify-content: center;">
+                <p><i class="fas fa-store"></i> <strong>UD Murah Meriah Bragolan</strong></p>
+                <p><i class="fas fa-map-pin"></i> Bragolan, Indonesia</p>
+                <a href="https://maps.app.goo.gl/NVgQQLD65iUSYEi47" target="_blank" style="color:#5c3e2b; text-decoration:underline;">🗺️ Buka Google Maps Lengkap →</a>
+                <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
                     <button id="facebookBtn" class="primary btn-fb" style="flex:1;"><i class="fab fa-facebook"></i> Facebook</button>
                 </div>
@@ -565,19 +564,11 @@
         <div id="adminAuthSection">
             <input type="password" id="adminPassword" placeholder="Password">
             <button id="verifyAdminBtn" class="primary">Verifikasi</button>
-            <div class="security-link"><a id="forgotOrChangeLink">🔐 Ganti Password</a></div>
         </div>
         <div id="adminPanelContent" style="display:none;">
-            <div class="change-pass-section" id="changePassSection">
-                <h4>Ganti Password Admin</h4>
-                <input type="password" id="newPassword" placeholder="Password Baru">
-                <input type="password" id="confirmPassword" placeholder="Konfirmasi Password Baru">
-                <button id="saveNewPasswordBtn" class="primary" style="background:#2e7d32;">Simpan Password Baru</button>
-                <button id="cancelChangePassBtn" class="primary" style="background:#888; margin-top:5px;">Batal</button>
-            </div>
             <h3>Edit Data Bisnis</h3>
-            <div class="security-link" style="margin-bottom:10px; text-align:right;">
-                <a id="changePassFromInside">⚙️ Ganti Password Admin</a>
+            <div style="background:#e8f5e9; padding:10px; border-radius:1rem; margin-bottom:1rem;">
+                <small><i class="fas fa-info-circle"></i> Upload foto lalu klik "Simpan Semua"</small>
             </div>
             <h4>Profil</h4>
             <input type="text" id="editOwnerName" placeholder="Nama Pemilik">
@@ -621,13 +612,8 @@
 <script>
     // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
+    const ADMIN_PASSWORD = "hanif123$";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
-    
-    let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
-    if (!ADMIN_PASSWORD) {
-        ADMIN_PASSWORD = "hanif123$";
-        localStorage.setItem('adminPassword', ADMIN_PASSWORD);
-    }
     
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
@@ -636,147 +622,6 @@
         news: [],
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
-    
-    // ========== NOTIFIKASI (DIPERBAIKI) ==========
-    let notifications = [];
-    let lastFacilityCount = -1;
-    let lastNewsCount = -1;
-    let notifPermissionRequested = false;
-    
-    function requestNotificationPermission() {
-        if (!('Notification' in window)) {
-            console.log("Browser tidak mendukung notifikasi");
-            return;
-        }
-        if (Notification.permission === 'granted') return;
-        if (Notification.permission === 'denied') return;
-        
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
-                // Kirim notifikasi uji coba
-                setTimeout(() => {
-                    new Notification("Notifikasi Aktif!", {
-                        body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
-                        icon: "https://placehold.co/100x100/d9a13b/white?text=UD",
-                        silent: false
-                    });
-                }, 1000);
-            }
-        });
-    }
-    
-    function showBrowserNotification(title, body) {
-        if (!('Notification' in window)) return;
-        if (Notification.permission === 'granted') {
-            try {
-                const notification = new Notification(title, {
-                    body: body,
-                    icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
-                    silent: false,
-                    vibrate: [200, 100, 200]
-                });
-                setTimeout(() => notification.close(), 8000);
-            } catch(e) { console.log("Notif error:", e); }
-        }
-    }
-    
-    function addNotification(title, message, type, itemId) {
-        const id = Date.now();
-        notifications.unshift({ id, title, message, type, itemId, time: new Date(), read: false });
-        if (notifications.length > 50) notifications = notifications.slice(0, 50);
-        localStorage.setItem('notifications', JSON.stringify(notifications));
-        updateNotificationBadge();
-        renderNotificationPanel();
-        showBrowserNotification(title, message);
-        showToast(`🔔 ${title}: ${message}`);
-    }
-    
-    function updateNotificationBadge() {
-        const unreadCount = notifications.filter(n => !n.read).length;
-        const badge = document.getElementById('notificationBadge');
-        if (badge) {
-            if (unreadCount > 0) {
-                badge.style.display = 'block';
-                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-    }
-    
-    function renderNotificationPanel() {
-        const container = document.getElementById('notificationList');
-        if (!container) return;
-        if (notifications.length === 0) {
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">Tidak ada notifikasi baru</div>';
-            return;
-        }
-        container.innerHTML = '';
-        notifications.slice(0, 20).forEach(notif => {
-            const div = document.createElement('div');
-            div.className = `notification-item ${!notif.read ? 'unread' : ''}`;
-            div.innerHTML = `<div class="notification-title">${escapeHtml(notif.title)}</div><div class="notification-desc">${escapeHtml(notif.message)}</div><div class="notification-time">${formatTimeAgo(notif.time)}</div>`;
-            div.onclick = () => { notif.read = true; localStorage.setItem('notifications', JSON.stringify(notifications)); updateNotificationBadge(); renderNotificationPanel(); };
-            container.appendChild(div);
-        });
-    }
-    
-    function formatTimeAgo(date) {
-        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-        if (seconds < 60) return 'baru saja';
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes} menit lalu`;
-        const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours} jam lalu`;
-        const days = Math.floor(hours / 24);
-        return `${days} hari lalu`;
-    }
-    
-    function checkNewData() {
-        let hasNew = false;
-        if (lastFacilityCount !== -1 && businessData.facilities && businessData.facilities.length > lastFacilityCount) {
-            const newCount = businessData.facilities.length - lastFacilityCount;
-            for (let i = 0; i < newCount; i++) {
-                const newItem = businessData.facilities[businessData.facilities.length - 1 - i];
-                if (newItem && !newItem._notified) {
-                    addNotification('🏭 Fasilitas Baru', `Fasilitas "${newItem.name}" telah ditambahkan`, 'facility', 'facilitiesList');
-                    newItem._notified = true;
-                    hasNew = true;
-                }
-            }
-        }
-        if (lastNewsCount !== -1 && businessData.news && businessData.news.length > lastNewsCount) {
-            const newCount = businessData.news.length - lastNewsCount;
-            for (let i = 0; i < newCount; i++) {
-                const newItem = businessData.news[i];
-                if (newItem && !newItem._notified) {
-                    addNotification('📰 Berita Baru', `"${newItem.title}" - ${newItem.content.substring(0, 50)}${newItem.content.length > 50 ? '...' : ''}`, 'news', 'newsList');
-                    newItem._notified = true;
-                    hasNew = true;
-                }
-            }
-        }
-        lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
-        lastNewsCount = businessData.news ? businessData.news.length : 0;
-        return hasNew;
-    }
-    
-    function resetNotificationCounters() {
-        lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
-        lastNewsCount = businessData.news ? businessData.news.length : 0;
-    }
-    
-    function loadNotifications() {
-        const saved = localStorage.getItem('notifications');
-        if (saved) {
-            try {
-                notifications = JSON.parse(saved);
-                updateNotificationBadge();
-                renderNotificationPanel();
-            } catch(e) {}
-        }
-    }
     
     // ========== JAM DIGITAL ==========
     function updateDigitalClock() {
@@ -789,19 +634,63 @@
     setInterval(updateDigitalClock, 1000);
     updateDigitalClock();
     
-    const namaHari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-    function updateJamOperasional() {
+    // ========== UPDATE JAM OPERASIONAL ==========
+    function updateOperationalStatus() {
         const today = new Date();
-        const hari = namaHari[today.getDay()];
-        const jam = today.getHours();
-        let isOpen = false;
-        if(hari === "Senin") isOpen = (jam >= 7 && (jam < 21 || (jam === 21 && today.getMinutes() <= 30)));
-        else if(hari === "Minggu") isOpen = false;
-        else isOpen = (jam >= 7 && jam < 21);
+        const dayIndex = today.getDay();
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const todayName = days[dayIndex];
         const statusDiv = document.getElementById('todayStatus');
-        if(statusDiv) statusDiv.innerHTML = isOpen ? `<span class="status-open"><i class="fas fa-store"></i> ${hari}: BUKA</span>` : `<span class="status-closed"><i class="fas fa-clock"></i> ${hari}: TUTUP</span>`;
+        
+        let isOpen = false;
+        let openTime = "", closeTime = "";
+        
+        if (todayName === 'Senin') {
+            isOpen = true;
+            openTime = "07.00";
+            closeTime = "21.30";
+        } else if (todayName === 'Minggu') {
+            isOpen = false;
+        } else {
+            isOpen = true;
+            openTime = "07.00";
+            closeTime = "21.00";
+        }
+        
+        // Cek waktu sekarang
+        if (isOpen) {
+            const now = today.getHours() * 60 + today.getMinutes();
+            let openMinutes = 7 * 60;
+            let closeMinutes = todayName === 'Senin' ? 21 * 60 + 30 : 21 * 60;
+            isOpen = now >= openMinutes && now < closeMinutes;
+        }
+        
+        if (isOpen) {
+            statusDiv.className = "today-status open";
+            statusDiv.innerHTML = `<i class="fas fa-store"></i> ${todayName}: BUKA - Tutup pukul ${closeTime}`;
+        } else {
+            statusDiv.className = "today-status closed";
+            if (todayName === 'Minggu') {
+                statusDiv.innerHTML = `<i class="fas fa-clock"></i> ${todayName}: TUTUP`;
+            } else {
+                statusDiv.innerHTML = `<i class="fas fa-clock"></i> ${todayName}: TUTUP - Buka pukul ${openTime}`;
+            }
+        }
+        
+        // Highlight hari ini di tabel
+        const rows = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        rows.forEach(day => {
+            const row = document.getElementById(`row${day}`);
+            if (row) {
+                row.classList.remove('today');
+                if (day === todayName) {
+                    row.classList.add('today');
+                }
+            }
+        });
     }
-    setInterval(updateJamOperasional, 60000);
+    
+    setInterval(updateOperationalStatus, 60000);
     
     function hideLoadingAndShowContent() {
         const loadingScreen = document.getElementById('loadingScreen');
@@ -810,14 +699,6 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                
-                // Tampilkan popup minta izin notifikasi setelah konten dimuat
-                setTimeout(() => {
-                    if (Notification && Notification.permission === 'default') {
-                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
-                        if (result) requestNotificationPermission();
-                    }
-                }, 2000);
             }, 500);
         }
     }
@@ -853,7 +734,6 @@
         setTimeout(() => toast.remove(), 3000);
     }
     
-    // ========== ZOOM GAMBAR (DIPERBAIKI) ==========
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
@@ -861,8 +741,6 @@
             zoomImg.src = imageUrl;
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-        } else {
-            showToast("Gambar tidak tersedia untuk dizoom");
         }
     }
     function closeZoomModal() { 
@@ -895,26 +773,22 @@
                 if (!businessData.news) businessData.news = [];
                 if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat | Free Ongkir Bragolan";
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
-                
-                if (lastFacilityCount !== -1 && lastNewsCount !== -1) {
-                    checkNewData();
-                } else {
-                    resetNotificationCounters();
-                }
                 renderPublic();
                 hideLoadingAndShowContent();
+                updateOperationalStatus();
                 showToast("✅ Data berhasil dimuat");
             } else {
                 renderPublic();
                 hideLoadingAndShowContent();
+                updateOperationalStatus();
             }
         } catch(e) {
             console.error("Load error:", e);
             renderPublic();
             hideLoadingAndShowContent();
+            updateOperationalStatus();
             showToast("⚠️ Menggunakan data lokal");
         }
-        updateJamOperasional();
     }
     
     async function saveToDrive() {
@@ -945,13 +819,11 @@
         document.getElementById("ownerEmailSpan").innerText = businessData.owner.email || "-";
         document.getElementById("ownerAddressSpan").innerText = businessData.owner.address || "-";
         if(businessData.owner.photoUrl) {
-            const ownerImg = document.getElementById("ownerPhotoImg");
-            ownerImg.src = businessData.owner.photoUrl;
-            ownerImg.onclick = () => openZoomModal(businessData.owner.photoUrl);
+            document.getElementById("ownerPhotoImg").src = businessData.owner.photoUrl;
+            document.getElementById("ownerPhotoImg").onclick = () => openZoomModal(businessData.owner.photoUrl);
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
-        // FASILITAS - dengan ZOOM
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(businessData.facilities && businessData.facilities.length > 0) {
@@ -967,7 +839,6 @@
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         }
         
-        // PRODUK - dengan ZOOM
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(businessData.products && businessData.products.length > 0) {
@@ -983,7 +854,6 @@
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         }
         
-        // BERITA - dengan ZOOM pada gambar
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(businessData.news && businessData.news.length > 0) {
@@ -1071,47 +941,8 @@
         });
     }
     
-    // ========== GANTI PASSWORD ==========
-    let changePassVisible = false;
-    function toggleChangePass() {
-        const section = document.getElementById('changePassSection');
-        changePassVisible = !changePassVisible;
-        section.style.display = changePassVisible ? 'block' : 'none';
-    }
-    function saveNewPassword() {
-        const newPass = document.getElementById('newPassword').value;
-        const confirmPass = document.getElementById('confirmPassword').value;
-        if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
-        if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
-        ADMIN_PASSWORD = newPass;
-        localStorage.setItem('adminPassword', newPass);
-        showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
-        toggleChangePass();
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
-        document.getElementById('adminModal').style.display = 'none';
-        setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
-    }
-    
-    // ========== EVENT LISTENERS ==========
-    const notificationBell = document.getElementById('notificationBell');
-    const notificationPanel = document.getElementById('notificationPanel');
-    if(notificationBell && notificationPanel) {
-        notificationBell.onclick = (e) => { e.stopPropagation(); notificationPanel.classList.toggle('show'); };
-        document.addEventListener('click', function(e) {
-            if(!notificationBell.contains(e.target) && !notificationPanel.contains(e.target)) notificationPanel.classList.remove('show');
-        });
-    }
-    
     document.getElementById('adminPanelBtn').onclick = () => document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').style.display = 'none';
-    
-    const forgotOrChangeLink = document.getElementById('forgotOrChangeLink');
-    if (forgotOrChangeLink) forgotOrChangeLink.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
-    const changePassFromInside = document.getElementById('changePassFromInside');
-    if (changePassFromInside) changePassFromInside.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
-    document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
-    document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
     
     document.getElementById('verifyAdminBtn').onclick = () => {
         const inputPass = document.getElementById('adminPassword').value;
@@ -1124,7 +955,6 @@
         }
     };
     
-    // TOMBOL ADMIN
     document.getElementById('addFacilityBtn').onclick = () => {
         let name = document.getElementById('newFacilityName').value.trim();
         let file = document.getElementById('newFacilityPhoto').files[0];
@@ -1255,7 +1085,6 @@
     window.closeZoomModal = closeZoomModal;
     window.openNewsDetail = openNewsDetail;
     
-    loadNotifications();
     loadData();
 </script>
 </body>
