@@ -421,18 +421,6 @@
         .security-link a { color: #5c3e2b; text-decoration: none; cursor: pointer; }
         .security-link a:hover { text-decoration: underline; }
         
-        /* NOTIFICATION PERMISSION BUTTON */
-        .notif-permission-btn {
-            background: #2d2418;
-            color: #ffd89b;
-            border: 1px solid #d9a13b;
-            padding: 0.3rem 0.8rem;
-            border-radius: 2rem;
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        
         @media (max-width: 700px) {
             body { font-size: 16px; }
             .navbar { flex-direction: column; text-align: center; }
@@ -491,7 +479,6 @@
         <button id="resetSearchBtn">Reset</button>
     </div>
 
-    <!-- PROFIL PEMILIK -->
     <div class="card">
         <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
         <div class="profile-wrapper">
@@ -507,25 +494,21 @@
         </div>
     </div>
 
-    <!-- FASILITAS -->
     <div class="card">
         <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
-    <!-- PRODUK -->
     <div class="card">
         <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
         <div id="productsList" class="grid-3"></div>
     </div>
 
-    <!-- BERITA -->
     <div class="card">
         <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
         <div id="newsList"></div>
     </div>
 
-    <!-- LOKASI & JAM -->
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
@@ -537,10 +520,10 @@
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
                     <tr><td>Senin</td><td>07.00 – 21.30</td>
-                    </tr><td>Selasa</td><td>07.00 – 21.00</td>
-                    <tr>.&zwnj;Rabu</td><td>07.00 – 21.00</td>
-                    <tr>.&zwnj;Kamis</td><td>07.00 – 21.00</td>
-                    <tr>.&zwnj;Jumat</td><td>07.00 – 21.00</td>
+                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
+                    <tr><td>Rabu</td><td>07.00 – 21.00</td>
+                    </td>.&zwnj;Kamis</td><td>07.00 – 21.00</td>
+                    </table>.&zwnj;Jumat</td><td>07.00 – 21.00</td>
                     <tr>.&zwnj;Sabtu</td><td>07.00 – 21.00</td>
                     <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
@@ -582,11 +565,11 @@
         <div id="adminAuthSection">
             <input type="password" id="adminPassword" placeholder="Password">
             <button id="verifyAdminBtn" class="primary">Verifikasi</button>
-            <div class="security-link"><a id="forgotOrChangeLink">🔐 Ganti Password</a></div>
         </div>
         <div id="adminPanelContent" style="display:none;">
             <div class="change-pass-section" id="changePassSection">
                 <h4>Ganti Password Admin</h4>
+                <input type="password" id="oldPassword" placeholder="Password Lama">
                 <input type="password" id="newPassword" placeholder="Password Baru">
                 <input type="password" id="confirmPassword" placeholder="Konfirmasi Password Baru">
                 <button id="saveNewPasswordBtn" class="primary" style="background:#2e7d32;">Simpan Password Baru</button>
@@ -640,11 +623,7 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
-    let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
-    if (!ADMIN_PASSWORD) {
-        ADMIN_PASSWORD = "hanif123$";
-        localStorage.setItem('adminPassword', ADMIN_PASSWORD);
-    }
+    // TIDAK ADA PASSWORD DI HTML! Semua verifikasi dilakukan di Google Apps Script
     
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
@@ -654,95 +633,44 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== NOTIFIKASI YANG BENAR-BENAR BEKERJA DI HP ==========
+    // ========== NOTIFIKASI ==========
     let notifications = [];
     let lastFacilityCount = -1;
     let lastNewsCount = -1;
-    let notifGranted = false;
     
-    // CEK DUKUNGAN NOTIFIKASI
-    function isNotificationSupported() {
-        return 'Notification' in window;
-    }
-    
-    // MULAI NOTIFIKASI - PAKSA MUNcul POPUP IZIN
     function requestNotificationPermission() {
-        if (!isNotificationSupported()) {
-            showToast("Browser Anda tidak mendukung notifikasi");
-            return false;
-        }
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') return;
+        if (Notification.permission === 'denied') return;
         
-        if (Notification.permission === 'granted') {
-            notifGranted = true;
-            showToast("✅ Notifikasi sudah aktif");
-            testNotification();
-            return true;
-        }
-        
-        if (Notification.permission === 'denied') {
-            showToast("⚠️ Notifikasi telah diblokir. Silakan izinkan di pengaturan browser");
-            return false;
-        }
-        
-        // MINTA IZIN
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                notifGranted = true;
-                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
-                testNotification();
-                // Simpan ke localStorage
-                localStorage.setItem('notif_granted', 'true');
-            } else {
-                showToast("⚠️ Anda tidak mengizinkan notifikasi. Aktifkan lewat pengaturan browser.");
+                showToast("✅ Notifikasi diaktifkan!");
+                setTimeout(() => {
+                    new Notification("Notifikasi Aktif!", {
+                        body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
+                        icon: "https://placehold.co/100x100/d9a13b/white?text=UD"
+                    });
+                }, 1000);
             }
         });
-        return false;
     }
     
-    // KIRIM NOTIFIKASI UJI COBA
-    function testNotification() {
-        if (Notification.permission === 'granted') {
-            try {
-                const testNotif = new Notification("🔔 UD Murah Meriah Bragolan", {
-                    body: "Notifikasi berhasil diaktifkan! Anda akan mendapat info promo dan berita terbaru.",
-                    icon: "https://placehold.co/100x100/d9a13b/white?text=UD",
-                    silent: false,
-                    vibrate: [200, 100, 200],
-                    requireInteraction: false
-                });
-                setTimeout(() => testNotif.close(), 5000);
-            } catch(e) {
-                console.log("Test notif error:", e);
-            }
-        }
-    }
-    
-    // TAMPILKAN NOTIFIKASI BROWSER (PASTI JALAN DI HP JIKA IZIN DIBERIKAN)
     function showBrowserNotification(title, body) {
-        if (!isNotificationSupported()) return;
-        
+        if (!('Notification' in window)) return;
         if (Notification.permission === 'granted') {
             try {
                 const notification = new Notification(title, {
                     body: body,
                     icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
                     silent: false,
-                    vibrate: [200, 100, 200],
-                    requireInteraction: false
+                    vibrate: [200, 100, 200]
                 });
                 setTimeout(() => notification.close(), 8000);
-                return true;
-            } catch(e) {
-                console.log("Notif error:", e);
-                return false;
-            }
-        } else {
-            console.log("Notifikasi belum diizinkan, permission:", Notification.permission);
-            return false;
+            } catch(e) { console.log("Notif error:", e); }
         }
     }
     
-    // TAMBAH NOTIFIKASI KE PANEL + BROWSER
     function addNotification(title, message, type, itemId) {
         const id = Date.now();
         notifications.unshift({ id, title, message, type, itemId, time: new Date(), read: false });
@@ -750,25 +678,10 @@
         localStorage.setItem('notifications', JSON.stringify(notifications));
         updateNotificationBadge();
         renderNotificationPanel();
-        
-        // TAMPILKAN NOTIFIKASI BROWSER (AKAN MUNCUL DI HP JIKA IZIN DIBERIKAN)
-        const browserNotifSent = showBrowserNotification(title, message);
-        
-        // TOAST SEBAGAI CADANGAN
+        showBrowserNotification(title, message);
         showToast(`🔔 ${title}: ${message}`);
-        
-        // JIKA NOTIFIKASI BROWSER GAGAL, INGATKAN USER UNTUK MENGIZINKAN
-        if (!browserNotifSent && Notification.permission !== 'granted') {
-            setTimeout(() => {
-                if (Notification.permission !== 'granted') {
-                    const enable = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru?\n\nKlik OK untuk mengizinkan notifikasi.");
-                    if (enable) requestNotificationPermission();
-                }
-            }, 1000);
-        }
     }
     
-    // UPDATE BADGE
     function updateNotificationBadge() {
         const unreadCount = notifications.filter(n => !n.read).length;
         const badge = document.getElementById('notificationBadge');
@@ -782,7 +695,6 @@
         }
     }
     
-    // RENDER PANEL NOTIFIKASI
     function renderNotificationPanel() {
         const container = document.getElementById('notificationList');
         if (!container) return;
@@ -811,9 +723,7 @@
         return `${days} hari lalu`;
     }
     
-    // CEK DATA BARU
     function checkNewData() {
-        let hasNew = false;
         if (lastFacilityCount !== -1 && businessData.facilities && businessData.facilities.length > lastFacilityCount) {
             const newCount = businessData.facilities.length - lastFacilityCount;
             for (let i = 0; i < newCount; i++) {
@@ -821,7 +731,6 @@
                 if (newItem && !newItem._notified) {
                     addNotification('🏭 Fasilitas Baru', `Fasilitas "${newItem.name}" telah ditambahkan`, 'facility', 'facilitiesList');
                     newItem._notified = true;
-                    hasNew = true;
                 }
             }
         }
@@ -832,13 +741,11 @@
                 if (newItem && !newItem._notified) {
                     addNotification('📰 Berita Baru', `"${newItem.title}" - ${newItem.content.substring(0, 50)}${newItem.content.length > 50 ? '...' : ''}`, 'news', 'newsList');
                     newItem._notified = true;
-                    hasNew = true;
                 }
             }
         }
         lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
         lastNewsCount = businessData.news ? businessData.news.length : 0;
-        return hasNew;
     }
     
     function resetNotificationCounters() {
@@ -854,10 +761,6 @@
                 updateNotificationBadge();
                 renderNotificationPanel();
             } catch(e) {}
-        }
-        const savedNotifGranted = localStorage.getItem('notif_granted');
-        if (savedNotifGranted === 'true' && Notification.permission === 'granted') {
-            notifGranted = true;
         }
     }
     
@@ -893,16 +796,12 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                
-                // MINTA IZIN NOTIFIKASI SETELAH KONTEN DIMUAT
                 setTimeout(() => {
                     if (Notification && Notification.permission === 'default') {
-                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita toko?\n\nKlik OK untuk mengizinkan.");
+                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
                         if (result) requestNotificationPermission();
-                    } else if (Notification && Notification.permission === 'granted') {
-                        testNotification();
                     }
-                }, 1500);
+                }, 2000);
             }, 500);
         }
     }
@@ -935,10 +834,10 @@
         toast.className = 'toast';
         toast.innerHTML = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
+        setTimeout(() => toast.remove(), 3000);
     }
     
-    // ZOOM GAMBAR
+    // ========== ZOOM GAMBAR ==========
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
@@ -967,6 +866,43 @@
     function closeNewsDetail() {
         document.getElementById('newsDetailModal').style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+    
+    // ========== FUNGSI LOGIN DAN SAVE KE DRIVE (AMAN) ==========
+    async function loginToAdmin(password) {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "login", password: password })
+            });
+            const result = await response.json();
+            return result.status === "success";
+        } catch(e) {
+            console.error("Login error:", e);
+            return false;
+        }
+    }
+    
+    async function changePassword(oldPassword, newPassword) {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "changePassword", oldPassword: oldPassword, newPassword: newPassword })
+            });
+            const result = await response.json();
+            if (result.status === "success") {
+                showToast("✅ Password berhasil diubah!");
+                return true;
+            } else {
+                showToast("❌ Gagal mengubah password: " + result.message);
+                return false;
+            }
+        } catch(e) {
+            showToast("❌ Gagal mengubah password: " + e.message);
+            return false;
+        }
     }
     
     async function loadData() {
@@ -1009,18 +945,27 @@
         if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
         if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
         
+        // Dapatkan password dari session sementara (disimpan saat login)
+        const currentPassword = sessionStorage.getItem('adminTempPassword');
+        if (!currentPassword) {
+            showToast("❌ Silakan login ulang");
+            return false;
+        }
+        
         try {
             showToast("💾 Menyimpan data...");
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: ADMIN_PASSWORD, data: dataToSend })
+                body: JSON.stringify({ action: "saveData", password: currentPassword, data: dataToSend })
             });
             showToast("✅ Data tersimpan");
             setTimeout(() => loadData(), 1000);
+            return true;
         } catch(e) { 
             showToast("❌ Gagal simpan: " + e.message);
+            return false;
         }
     }
     
@@ -1036,7 +981,6 @@
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
-        // FASILITAS - dengan ZOOM
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(businessData.facilities && businessData.facilities.length > 0) {
@@ -1052,7 +996,6 @@
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         }
         
-        // PRODUK - dengan ZOOM
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(businessData.products && businessData.products.length > 0) {
@@ -1068,7 +1011,6 @@
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         }
         
-        // BERITA - dengan ZOOM pada gambar
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(businessData.news && businessData.news.length > 0) {
@@ -1088,7 +1030,7 @@
     
     function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
     
-    // ADMIN PANEL
+    // ========== ADMIN PANEL ==========
     function renderAdminLists() {
         const adminFacDiv = document.getElementById('adminFacilitiesList');
         if(adminFacDiv) {
@@ -1156,29 +1098,40 @@
         });
     }
     
-    // GANTI PASSWORD
+    // ========== GANTI PASSWORD (Harus input password lama) ==========
     let changePassVisible = false;
     function toggleChangePass() {
         const section = document.getElementById('changePassSection');
         changePassVisible = !changePassVisible;
         section.style.display = changePassVisible ? 'block' : 'none';
-    }
-    function saveNewPassword() {
-        const newPass = document.getElementById('newPassword').value;
-        const confirmPass = document.getElementById('confirmPassword').value;
-        if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
-        if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
-        ADMIN_PASSWORD = newPass;
-        localStorage.setItem('adminPassword', newPass);
-        showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
-        toggleChangePass();
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
-        document.getElementById('adminModal').style.display = 'none';
-        setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
+        if (!changePassVisible) {
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
     }
     
-    // EVENT LISTENERS
+    async function saveNewPassword() {
+        const oldPass = document.getElementById('oldPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+        
+        if (!oldPass) { showToast("Masukkan password lama"); return; }
+        if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
+        if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
+        if (newPass.length < 4) { showToast("Password minimal 4 karakter"); return; }
+        
+        const success = await changePassword(oldPass, newPass);
+        if (success) {
+            toggleChangePass();
+            // Password berhasil diubah, tutup modal
+            document.getElementById('adminModal').style.display = 'none';
+            // Hapus session
+            sessionStorage.removeItem('adminTempPassword');
+        }
+    }
+    
+    // ========== EVENT LISTENERS ==========
     const notificationBell = document.getElementById('notificationBell');
     const notificationPanel = document.getElementById('notificationPanel');
     if(notificationBell && notificationPanel) {
@@ -1191,19 +1144,29 @@
     document.getElementById('adminPanelBtn').onclick = () => document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').style.display = 'none';
     
-    const forgotOrChangeLink = document.getElementById('forgotOrChangeLink');
-    if (forgotOrChangeLink) forgotOrChangeLink.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
     const changePassFromInside = document.getElementById('changePassFromInside');
     if (changePassFromInside) changePassFromInside.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
     document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
     document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
     
-    document.getElementById('verifyAdminBtn').onclick = () => {
+    // VERIFIKASI LOGIN - PASSWORD DIVERIFIKASI KE GOOGLE APPS SCRIPT
+    document.getElementById('verifyAdminBtn').onclick = async () => {
         const inputPass = document.getElementById('adminPassword').value;
-        if(inputPass === ADMIN_PASSWORD) {
+        if (!inputPass) {
+            alert("Masukkan password!");
+            return;
+        }
+        
+        showToast("🔐 Memverifikasi password...");
+        const isValid = await loginToAdmin(inputPass);
+        
+        if (isValid) {
+            // Simpan password sementara di session untuk operasi selanjutnya
+            sessionStorage.setItem('adminTempPassword', inputPass);
             document.getElementById('adminAuthSection').style.display = 'none';
             document.getElementById('adminPanelContent').style.display = 'block';
             renderAdminLists();
+            showToast("✅ Login berhasil!");
         } else {
             alert("Password salah!");
         }
