@@ -13,14 +13,8 @@
             background: linear-gradient(135deg, #f5f0e8 0%, #e8dfd1 100%);
             color: #2d2418;
             font-size: 18px;
-        }
-        /* Nonaktifkan klik kanan */
-        body {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
@@ -303,7 +297,6 @@
         }
         .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
         
-        /* ========== JADWAL OPERASIONAL YANG CANTIK ========== */
         .schedule-container {
             background: #fef8ef;
             border-radius: 1rem;
@@ -323,25 +316,10 @@
             width: 100%;
             border-collapse: collapse;
         }
-        .schedule-table tr {
-            border-bottom: 1px solid #f0e4d0;
-        }
-        .schedule-table td {
-            padding: 12px 8px;
-        }
-        .schedule-table td:first-child {
-            font-weight: 600;
-            width: 100px;
-        }
-        .schedule-table .today {
-            background: #fff3e0;
-            border-radius: 0.5rem;
-            font-weight: 700;
-            color: #d9a13b;
-        }
-        .schedule-table .closed-day {
-            color: #c62828;
-        }
+        .schedule-table tr { border-bottom: 1px solid #f0e4d0; }
+        .schedule-table td { padding: 12px 8px; }
+        .schedule-table td:first-child { font-weight: 600; width: 100px; }
+        .schedule-table .today { background: #fff3e0; border-radius: 0.5rem; font-weight: 700; color: #d9a13b; }
         
         .zoom-modal {
             display: none;
@@ -420,12 +398,9 @@
 </head>
 <body>
 
-<!-- Nonaktifkan klik kanan -->
 <script>
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    });
+    // Nonaktifkan klik kanan dan inspect element
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
     document.addEventListener('keydown', function(e) {
         if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'U')) {
             e.preventDefault();
@@ -495,7 +470,7 @@
         <div id="newsList"></div>
     </div>
 
-    <!-- JADWAL OPERASIONAL YANG CANTIK -->
+    <!-- JADWAL OPERASIONAL -->
     <div class="card">
         <h2><i class="fas fa-clock"></i> Jam Operasional</h2>
         <div class="schedule-container">
@@ -611,7 +586,8 @@
 
 <script>
     // ========== KONFIGURASI ==========
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
+    // URL APPS SCRIPT BARU
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQieo5SuZO9GRSudqiPSVIGHjDMLgRLIYkuUoYONvCDcevivcuDx6fSdT_kpb0lgyL/exec";
     const ADMIN_PASSWORD = "hanif123$";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
@@ -657,12 +633,10 @@
             closeTime = "21.00";
         }
         
-        // Cek waktu sekarang
         if (isOpen) {
             const now = today.getHours() * 60 + today.getMinutes();
-            let openMinutes = 7 * 60;
             let closeMinutes = todayName === 'Senin' ? 21 * 60 + 30 : 21 * 60;
-            isOpen = now >= openMinutes && now < closeMinutes;
+            isOpen = now >= (7*60) && now < closeMinutes;
         }
         
         if (isOpen) {
@@ -677,15 +651,12 @@
             }
         }
         
-        // Highlight hari ini di tabel
         const rows = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         rows.forEach(day => {
             const row = document.getElementById(`row${day}`);
             if (row) {
                 row.classList.remove('today');
-                if (day === todayName) {
-                    row.classList.add('today');
-                }
+                if (day === todayName) row.classList.add('today');
             }
         });
     }
@@ -699,6 +670,7 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                updateOperationalStatus();
             }, 500);
         }
     }
@@ -775,18 +747,15 @@
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
                 renderPublic();
                 hideLoadingAndShowContent();
-                updateOperationalStatus();
                 showToast("✅ Data berhasil dimuat");
             } else {
                 renderPublic();
                 hideLoadingAndShowContent();
-                updateOperationalStatus();
             }
         } catch(e) {
             console.error("Load error:", e);
             renderPublic();
             hideLoadingAndShowContent();
-            updateOperationalStatus();
             showToast("⚠️ Menggunakan data lokal");
         }
     }
