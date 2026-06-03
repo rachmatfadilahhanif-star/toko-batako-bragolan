@@ -421,6 +421,18 @@
         .security-link a { color: #5c3e2b; text-decoration: none; cursor: pointer; }
         .security-link a:hover { text-decoration: underline; }
         
+        /* NOTIFICATION PERMISSION BUTTON */
+        .notif-permission-btn {
+            background: #2d2418;
+            color: #ffd89b;
+            border: 1px solid #d9a13b;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
         @media (max-width: 700px) {
             body { font-size: 16px; }
             .navbar { flex-direction: column; text-align: center; }
@@ -479,6 +491,7 @@
         <button id="resetSearchBtn">Reset</button>
     </div>
 
+    <!-- PROFIL PEMILIK -->
     <div class="card">
         <h2><i class="fas fa-user-tie"></i> Profil Pemilik</h2>
         <div class="profile-wrapper">
@@ -494,21 +507,25 @@
         </div>
     </div>
 
+    <!-- FASILITAS -->
     <div class="card">
         <h2><i class="fas fa-industry"></i> Fasilitas Kami Sediakan</h2>
         <div id="facilitiesList" class="grid-3"></div>
     </div>
 
+    <!-- PRODUK -->
     <div class="card">
         <h2><i class="fas fa-boxes"></i> Produk & Harga</h2>
         <div id="productsList" class="grid-3"></div>
     </div>
 
+    <!-- BERITA -->
     <div class="card">
         <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
         <div id="newsList"></div>
     </div>
 
+    <!-- LOKASI & JAM -->
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
@@ -520,11 +537,11 @@
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
                     <tr><td>Senin</td><td>07.00 – 21.30</td>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
-                    <tr><td>Rabu</td><td>07.00 – 21.00</td>
-                    </td>.<td>Kamis</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
-                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
+                    </tr><td>Selasa</td><td>07.00 – 21.00</td>
+                    <tr>.&zwnj;Rabu</td><td>07.00 – 21.00</td>
+                    <tr>.&zwnj;Kamis</td><td>07.00 – 21.00</td>
+                    <tr>.&zwnj;Jumat</td><td>07.00 – 21.00</td>
+                    <tr>.&zwnj;Sabtu</td><td>07.00 – 21.00</td>
                     <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
@@ -637,50 +654,95 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== NOTIFIKASI (DIPERBAIKI) ==========
+    // ========== NOTIFIKASI YANG BENAR-BENAR BEKERJA DI HP ==========
     let notifications = [];
     let lastFacilityCount = -1;
     let lastNewsCount = -1;
-    let notifPermissionRequested = false;
+    let notifGranted = false;
     
-    function requestNotificationPermission() {
-        if (!('Notification' in window)) {
-            console.log("Browser tidak mendukung notifikasi");
-            return;
-        }
-        if (Notification.permission === 'granted') return;
-        if (Notification.permission === 'denied') return;
-        
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
-                // Kirim notifikasi uji coba
-                setTimeout(() => {
-                    new Notification("Notifikasi Aktif!", {
-                        body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
-                        icon: "https://placehold.co/100x100/d9a13b/white?text=UD",
-                        silent: false
-                    });
-                }, 1000);
-            }
-        });
+    // CEK DUKUNGAN NOTIFIKASI
+    function isNotificationSupported() {
+        return 'Notification' in window;
     }
     
+    // MULAI NOTIFIKASI - PAKSA MUNcul POPUP IZIN
+    function requestNotificationPermission() {
+        if (!isNotificationSupported()) {
+            showToast("Browser Anda tidak mendukung notifikasi");
+            return false;
+        }
+        
+        if (Notification.permission === 'granted') {
+            notifGranted = true;
+            showToast("✅ Notifikasi sudah aktif");
+            testNotification();
+            return true;
+        }
+        
+        if (Notification.permission === 'denied') {
+            showToast("⚠️ Notifikasi telah diblokir. Silakan izinkan di pengaturan browser");
+            return false;
+        }
+        
+        // MINTA IZIN
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                notifGranted = true;
+                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
+                testNotification();
+                // Simpan ke localStorage
+                localStorage.setItem('notif_granted', 'true');
+            } else {
+                showToast("⚠️ Anda tidak mengizinkan notifikasi. Aktifkan lewat pengaturan browser.");
+            }
+        });
+        return false;
+    }
+    
+    // KIRIM NOTIFIKASI UJI COBA
+    function testNotification() {
+        if (Notification.permission === 'granted') {
+            try {
+                const testNotif = new Notification("🔔 UD Murah Meriah Bragolan", {
+                    body: "Notifikasi berhasil diaktifkan! Anda akan mendapat info promo dan berita terbaru.",
+                    icon: "https://placehold.co/100x100/d9a13b/white?text=UD",
+                    silent: false,
+                    vibrate: [200, 100, 200],
+                    requireInteraction: false
+                });
+                setTimeout(() => testNotif.close(), 5000);
+            } catch(e) {
+                console.log("Test notif error:", e);
+            }
+        }
+    }
+    
+    // TAMPILKAN NOTIFIKASI BROWSER (PASTI JALAN DI HP JIKA IZIN DIBERIKAN)
     function showBrowserNotification(title, body) {
-        if (!('Notification' in window)) return;
+        if (!isNotificationSupported()) return;
+        
         if (Notification.permission === 'granted') {
             try {
                 const notification = new Notification(title, {
                     body: body,
                     icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
                     silent: false,
-                    vibrate: [200, 100, 200]
+                    vibrate: [200, 100, 200],
+                    requireInteraction: false
                 });
                 setTimeout(() => notification.close(), 8000);
-            } catch(e) { console.log("Notif error:", e); }
+                return true;
+            } catch(e) {
+                console.log("Notif error:", e);
+                return false;
+            }
+        } else {
+            console.log("Notifikasi belum diizinkan, permission:", Notification.permission);
+            return false;
         }
     }
     
+    // TAMBAH NOTIFIKASI KE PANEL + BROWSER
     function addNotification(title, message, type, itemId) {
         const id = Date.now();
         notifications.unshift({ id, title, message, type, itemId, time: new Date(), read: false });
@@ -688,10 +750,25 @@
         localStorage.setItem('notifications', JSON.stringify(notifications));
         updateNotificationBadge();
         renderNotificationPanel();
-        showBrowserNotification(title, message);
+        
+        // TAMPILKAN NOTIFIKASI BROWSER (AKAN MUNCUL DI HP JIKA IZIN DIBERIKAN)
+        const browserNotifSent = showBrowserNotification(title, message);
+        
+        // TOAST SEBAGAI CADANGAN
         showToast(`🔔 ${title}: ${message}`);
+        
+        // JIKA NOTIFIKASI BROWSER GAGAL, INGATKAN USER UNTUK MENGIZINKAN
+        if (!browserNotifSent && Notification.permission !== 'granted') {
+            setTimeout(() => {
+                if (Notification.permission !== 'granted') {
+                    const enable = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru?\n\nKlik OK untuk mengizinkan notifikasi.");
+                    if (enable) requestNotificationPermission();
+                }
+            }, 1000);
+        }
     }
     
+    // UPDATE BADGE
     function updateNotificationBadge() {
         const unreadCount = notifications.filter(n => !n.read).length;
         const badge = document.getElementById('notificationBadge');
@@ -705,6 +782,7 @@
         }
     }
     
+    // RENDER PANEL NOTIFIKASI
     function renderNotificationPanel() {
         const container = document.getElementById('notificationList');
         if (!container) return;
@@ -733,6 +811,7 @@
         return `${days} hari lalu`;
     }
     
+    // CEK DATA BARU
     function checkNewData() {
         let hasNew = false;
         if (lastFacilityCount !== -1 && businessData.facilities && businessData.facilities.length > lastFacilityCount) {
@@ -776,6 +855,10 @@
                 renderNotificationPanel();
             } catch(e) {}
         }
+        const savedNotifGranted = localStorage.getItem('notif_granted');
+        if (savedNotifGranted === 'true' && Notification.permission === 'granted') {
+            notifGranted = true;
+        }
     }
     
     // ========== JAM DIGITAL ==========
@@ -811,13 +894,15 @@
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
-                // Tampilkan popup minta izin notifikasi setelah konten dimuat
+                // MINTA IZIN NOTIFIKASI SETELAH KONTEN DIMUAT
                 setTimeout(() => {
                     if (Notification && Notification.permission === 'default') {
-                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
+                        const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita toko?\n\nKlik OK untuk mengizinkan.");
                         if (result) requestNotificationPermission();
+                    } else if (Notification && Notification.permission === 'granted') {
+                        testNotification();
                     }
-                }, 2000);
+                }, 1500);
             }, 500);
         }
     }
@@ -850,10 +935,10 @@
         toast.className = 'toast';
         toast.innerHTML = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => toast.remove(), 3500);
     }
     
-    // ========== ZOOM GAMBAR (DIPERBAIKI) ==========
+    // ZOOM GAMBAR
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
@@ -1003,7 +1088,7 @@
     
     function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
     
-    // ========== ADMIN PANEL ==========
+    // ADMIN PANEL
     function renderAdminLists() {
         const adminFacDiv = document.getElementById('adminFacilitiesList');
         if(adminFacDiv) {
@@ -1071,7 +1156,7 @@
         });
     }
     
-    // ========== GANTI PASSWORD ==========
+    // GANTI PASSWORD
     let changePassVisible = false;
     function toggleChangePass() {
         const section = document.getElementById('changePassSection');
@@ -1093,7 +1178,7 @@
         setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
     }
     
-    // ========== EVENT LISTENERS ==========
+    // EVENT LISTENERS
     const notificationBell = document.getElementById('notificationBell');
     const notificationPanel = document.getElementById('notificationPanel');
     if(notificationBell && notificationPanel) {
