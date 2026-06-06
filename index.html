@@ -519,13 +519,13 @@
             <div>
                 <div id="todayStatus" style="margin-bottom: 10px;"></div>
                 <table class="hours-table">
-                    <tr><td>Senin</td><td>07.00 – 21.30</td></tr>
-                    <tr><td>Selasa</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Rabu</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Kamis</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Jumat</td><td>07.00 – 21.00</td></tr>
-                    <tr><td>Sabtu</td><td>07.00 – 21.00</td></tr>
-                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td></tr>
+                    <tr><td>Senin</td><td>07.00 – 21.30</td>
+                    <tr><td>Selasa</td><td>07.00 – 21.00</td>
+                    <tr><td>Rabu</td><td>07.00 – 21.00</td>
+                    </td>.<td>Kamis</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Jumat</td><td>07.00 – 21.00</td>
+                    <tr>.<td>Sabtu</td><td>07.00 – 21.00</td>
+                    <tr style="color:#c62828;"><td>Minggu</td><td>TUTUP</td>
                 </table>
                 <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
                     <button id="whatsappBtn" class="primary btn-wa" style="flex:1;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
@@ -570,8 +570,7 @@
         <div id="adminPanelContent" style="display:none;">
             <div class="change-pass-section" id="changePassSection">
                 <h4>Ganti Password Admin</h4>
-                <input type="password" id="oldPasswordForChange" placeholder="Password Lama">
-                <input type="password" id="newPassword" placeholder="Password Baru (min 4 karakter)">
+                <input type="password" id="newPassword" placeholder="Password Baru">
                 <input type="password" id="confirmPassword" placeholder="Konfirmasi Password Baru">
                 <button id="saveNewPasswordBtn" class="primary" style="background:#2e7d32;">Simpan Password Baru</button>
                 <button id="cancelChangePassBtn" class="primary" style="background:#888; margin-top:5px;">Batal</button>
@@ -620,12 +619,15 @@
 </div>
 
 <script>
-    const PASSWORD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAacyFETuASUpU2vQLhIY3jTJZZAWdDuXJG3LRg6uOWTDqZSkcA3xPGNZj8QgYRDsZ/exec";
-    const STORAGE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
+    // ========== KONFIGURASI ==========
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
-    // Flag untuk mencegah reload menimpa perubahan yang sedang disimpan
-    let isSaving = false;
+    let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
+    if (!ADMIN_PASSWORD) {
+        ADMIN_PASSWORD = "hanif123$";
+        localStorage.setItem('adminPassword', ADMIN_PASSWORD);
+    }
     
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
@@ -635,51 +637,24 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== FUNGSI AUTHENTIKASI ==========
-    async function verifyPasswordWithScript(password) {
-        try {
-            const response = await fetch(`${PASSWORD_SCRIPT_URL}?action=verify&password=${encodeURIComponent(password)}`);
-            const result = await response.json();
-            return result.data?.valid === true;
-        } catch(e) {
-            console.error("Verifikasi error:", e);
-            return false;
-        }
-    }
-    
-    async function updatePasswordWithScript(oldPassword, newPassword) {
-        try {
-            const response = await fetch(`${PASSWORD_SCRIPT_URL}?action=update&currentPassword=${encodeURIComponent(oldPassword)}&newPassword=${encodeURIComponent(newPassword)}`);
-            const result = await response.json();
-            return result;
-        } catch(e) {
-            console.error("Update error:", e);
-            return { success: false, message: e.message };
-        }
-    }
-    
-    async function checkPasswordStatus() {
-        try {
-            const response = await fetch(`${PASSWORD_SCRIPT_URL}?action=status`);
-            const result = await response.json();
-            return result.data || { isDefault: true };
-        } catch(e) {
-            return { isDefault: true };
-        }
-    }
-    
-    // ========== NOTIFIKASI ==========
+    // ========== NOTIFIKASI (DIPERBAIKI) ==========
     let notifications = [];
     let lastFacilityCount = -1;
     let lastNewsCount = -1;
+    let notifPermissionRequested = false;
     
     function requestNotificationPermission() {
-        if (!('Notification' in window)) return;
+        if (!('Notification' in window)) {
+            console.log("Browser tidak mendukung notifikasi");
+            return;
+        }
         if (Notification.permission === 'granted') return;
         if (Notification.permission === 'denied') return;
+        
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                showToast("✅ Notifikasi diaktifkan!");
+                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
+                // Kirim notifikasi uji coba
                 setTimeout(() => {
                     new Notification("Notifikasi Aktif!", {
                         body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
@@ -698,10 +673,11 @@
                 const notification = new Notification(title, {
                     body: body,
                     icon: 'https://placehold.co/100x100/d9a13b/white?text=UD',
-                    silent: false
+                    silent: false,
+                    vibrate: [200, 100, 200]
                 });
                 setTimeout(() => notification.close(), 8000);
-            } catch(e) {}
+            } catch(e) { console.log("Notif error:", e); }
         }
     }
     
@@ -758,6 +734,7 @@
     }
     
     function checkNewData() {
+        let hasNew = false;
         if (lastFacilityCount !== -1 && businessData.facilities && businessData.facilities.length > lastFacilityCount) {
             const newCount = businessData.facilities.length - lastFacilityCount;
             for (let i = 0; i < newCount; i++) {
@@ -765,6 +742,7 @@
                 if (newItem && !newItem._notified) {
                     addNotification('🏭 Fasilitas Baru', `Fasilitas "${newItem.name}" telah ditambahkan`, 'facility', 'facilitiesList');
                     newItem._notified = true;
+                    hasNew = true;
                 }
             }
         }
@@ -775,11 +753,13 @@
                 if (newItem && !newItem._notified) {
                     addNotification('📰 Berita Baru', `"${newItem.title}" - ${newItem.content.substring(0, 50)}${newItem.content.length > 50 ? '...' : ''}`, 'news', 'newsList');
                     newItem._notified = true;
+                    hasNew = true;
                 }
             }
         }
         lastFacilityCount = businessData.facilities ? businessData.facilities.length : 0;
         lastNewsCount = businessData.news ? businessData.news.length : 0;
+        return hasNew;
     }
     
     function resetNotificationCounters() {
@@ -830,6 +810,8 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                // Tampilkan popup minta izin notifikasi setelah konten dimuat
                 setTimeout(() => {
                     if (Notification && Notification.permission === 'default') {
                         const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
@@ -839,10 +821,8 @@
             }, 500);
         }
     }
-
-    // ========== COMPRESS GAMBAR ==========
-    function compressImage(file, maxWidth, callback, maxSizeKB) {
-        maxSizeKB = maxSizeKB || 200;
+    
+    function compressImage(file, maxWidth, callback) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
@@ -851,25 +831,17 @@
                 let width = img.width;
                 let height = img.height;
                 if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
+                    height = (height * maxWidth) / width;
                     width = maxWidth;
                 }
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                let quality = 0.7;
-                let dataUrl = canvas.toDataURL('image/jpeg', quality);
-                while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.1) {
-                    quality -= 0.1;
-                    dataUrl = canvas.toDataURL('image/jpeg', quality);
-                }
-                callback(dataUrl);
+                callback(canvas.toDataURL('image/jpeg', 0.7));
             };
-            img.onerror = () => showToast("❌ Gagal memuat gambar");
             img.src = e.target.result;
         };
-        reader.onerror = () => showToast("❌ Gagal membaca file");
         reader.readAsDataURL(file);
     }
     
@@ -881,7 +853,7 @@
         setTimeout(() => toast.remove(), 3000);
     }
     
-    // ========== ZOOM GAMBAR ==========
+    // ========== ZOOM GAMBAR (DIPERBAIKI) ==========
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
@@ -912,18 +884,9 @@
         document.body.style.overflow = 'auto';
     }
     
-    // ========== LOAD DATA ==========
     async function loadData() {
-        // FIX: Jangan reload jika sedang proses simpan
-        if (isSaving) {
-            console.log("Skipping loadData karena sedang menyimpan");
-            return;
-        }
         try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 15000);
-            const res = await fetch(`${STORAGE_SCRIPT_URL}?t=${Date.now()}`, { signal: controller.signal });
-            clearTimeout(timeout);
+            const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
             const result = await res.json();
             if(result.status === "success" && result.data) {
                 businessData = result.data;
@@ -932,6 +895,7 @@
                 if (!businessData.news) businessData.news = [];
                 if (!businessData.runningText) businessData.runningText = "🏆 Batako Super Padat | Free Ongkir Bragolan";
                 if (!businessData.owner) businessData.owner = { name: "", phone: "", email: "", address: "", photoUrl: "" };
+                
                 if (lastFacilityCount !== -1 && lastNewsCount !== -1) {
                     checkNewData();
                 } else {
@@ -953,56 +917,25 @@
         updateJamOperasional();
     }
     
-    // ========== SIMPAN DATA ==========
-    // FIX UTAMA: saveToDrive TIDAK memanggil loadData() setelah simpan.
-    // Ini mencegah data lama dari server menimpa perubahan (delete) yang baru dilakukan.
-    // Render ulang dilakukan langsung dari businessData lokal yang sudah diubah.
     async function saveToDrive() {
-        // Buat salinan data tanpa field internal
         let dataToSend = JSON.parse(JSON.stringify(businessData));
-        if(dataToSend.facilities) dataToSend.facilities.forEach(f => { delete f._notified; });
-        if(dataToSend.products) dataToSend.products.forEach(p => { delete p._notified; });
-        if(dataToSend.news) dataToSend.news.forEach(n => { delete n._notified; });
+        if(dataToSend.owner) delete dataToSend.owner.photoBase64;
+        if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
+        if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
+        if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
         
-        isSaving = true;
         try {
             showToast("💾 Menyimpan data...");
-            const formData = new URLSearchParams();
-            formData.append('data', JSON.stringify({ data: dataToSend }));
-            
-            const response = await fetch(STORAGE_SCRIPT_URL, {
+            await fetch(SCRIPT_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: formData.toString()
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: ADMIN_PASSWORD, data: dataToSend })
             });
-            
-            let saved = false;
-            try {
-                const result = await response.json();
-                saved = result.status === "success" || result.success === true;
-            } catch(jsonErr) {
-                saved = response.ok || response.status === 0 || response.type === 'opaque';
-            }
-            
-            if(saved) {
-                showToast("✅ Data tersimpan");
-            } else {
-                // Fallback no-cors
-                await fetch(STORAGE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ data: dataToSend })
-                });
-                showToast("✅ Data tersimpan (mode fallback)");
-            }
-            // FIX: TIDAK memanggil loadData() di sini agar data yg sudah didelete tidak kembali muncul
+            showToast("✅ Data tersimpan");
+            setTimeout(() => loadData(), 1000);
         } catch(e) { 
-            console.error("Save error:", e);
             showToast("❌ Gagal simpan: " + e.message);
-        } finally {
-            // Lepas flag setelah 3 detik untuk keamanan
-            setTimeout(() => { isSaving = false; }, 3000);
         }
     }
     
@@ -1018,6 +951,7 @@
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
+        // FASILITAS - dengan ZOOM
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(businessData.facilities && businessData.facilities.length > 0) {
@@ -1033,6 +967,7 @@
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         }
         
+        // PRODUK - dengan ZOOM
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(businessData.products && businessData.products.length > 0) {
@@ -1048,6 +983,7 @@
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         }
         
+        // BERITA - dengan ZOOM pada gambar
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(businessData.news && businessData.news.length > 0) {
@@ -1072,97 +1008,67 @@
         const adminFacDiv = document.getElementById('adminFacilitiesList');
         if(adminFacDiv) {
             adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
-            if(businessData.facilities.length === 0) {
-                adminFacDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada fasilitas</em></div>";
-            }
-            // FIX: Render dengan data-id unik agar index tidak salah
-            businessData.facilities.forEach((f, i) => {
-                const item = document.createElement('div');
-                item.className = 'admin-list-item';
-                item.innerHTML = `<span>📌 ${escapeHtml(f.name)}</span>`;
-                const btn = document.createElement('button');
-                btn.textContent = 'Hapus';
-                btn.style.cssText = 'background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
-                btn.onclick = function() {
-                    if(!confirm(`Hapus fasilitas "${f.name}"?`)) return;
-                    // FIX: Hapus berdasarkan index saat ini, bukan index lama
-                    const currentIdx = businessData.facilities.indexOf(f);
-                    if(currentIdx !== -1) {
-                        businessData.facilities.splice(currentIdx, 1);
-                        renderAdminLists();
-                        renderPublic();
-                        saveToDrive();
-                        showToast("✅ Fasilitas dihapus");
-                    }
-                };
-                item.appendChild(btn);
-                adminFacDiv.appendChild(item);
+            if(businessData.facilities.length === 0) adminFacDiv.innerHTML += "<em>Belum ada fasilitas</em>";
+            businessData.facilities.forEach((f,i) => {
+                adminFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
             });
         }
-
         const adminProdDiv = document.getElementById('adminProductsList');
         if(adminProdDiv) {
             adminProdDiv.innerHTML = "<strong>Produk:</strong>";
-            if(businessData.products.length === 0) {
-                adminProdDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada produk</em></div>";
-            }
-            businessData.products.forEach((p, i) => {
-                const item = document.createElement('div');
-                item.className = 'admin-list-item';
-                item.innerHTML = `<span>🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)}</span>`;
-                const btn = document.createElement('button');
-                btn.textContent = 'Hapus';
-                btn.style.cssText = 'background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
-                btn.onclick = function() {
-                    if(!confirm(`Hapus produk "${p.name}"?`)) return;
-                    const currentIdx = businessData.products.indexOf(p);
-                    if(currentIdx !== -1) {
-                        businessData.products.splice(currentIdx, 1);
-                        renderAdminLists();
-                        renderPublic();
-                        saveToDrive();
-                        showToast("✅ Produk dihapus");
-                    }
-                };
-                item.appendChild(btn);
-                adminProdDiv.appendChild(item);
+            if(businessData.products.length === 0) adminProdDiv.innerHTML += "<em>Belum ada produk</em>";
+            businessData.products.forEach((p,i) => {
+                adminProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px;">Hapus</button></div>`;
             });
         }
-
         const adminNewsDiv = document.getElementById('adminNewsList');
         if(adminNewsDiv) {
             adminNewsDiv.innerHTML = "<strong>Berita:</strong>";
-            if(businessData.news.length === 0) {
-                adminNewsDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada berita</em></div>";
-            }
-            businessData.news.forEach((n, i) => {
-                const item = document.createElement('div');
-                item.className = 'admin-list-item';
-                item.innerHTML = `<span>📰 ${escapeHtml(n.title)}</span>`;
-                const btn = document.createElement('button');
-                btn.textContent = 'Hapus';
-                btn.style.cssText = 'background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
-                btn.onclick = function() {
-                    if(!confirm(`Hapus berita "${n.title}"?`)) return;
-                    const currentIdx = businessData.news.indexOf(n);
-                    if(currentIdx !== -1) {
-                        businessData.news.splice(currentIdx, 1);
-                        renderAdminLists();
-                        renderPublic();
-                        saveToDrive();
-                        showToast("✅ Berita dihapus");
-                    }
-                };
-                item.appendChild(btn);
-                adminNewsDiv.appendChild(item);
+            if(businessData.news.length === 0) adminNewsDiv.innerHTML += "<em>Belum ada berita</em>";
+            businessData.news.forEach((n,i) => {
+                adminNewsDiv.innerHTML += `<div class="admin-list-item">📰 ${escapeHtml(n.title)} <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white;">Hapus</button></div>`;
             });
         }
-
         document.getElementById('editOwnerName').value = businessData.owner.name || "";
         document.getElementById('editOwnerPhone').value = businessData.owner.phone || "";
         document.getElementById('editOwnerEmail').value = businessData.owner.email || "";
         document.getElementById('editOwnerAddress').value = businessData.owner.address || "";
         document.getElementById('editRunningText').value = businessData.runningText || "";
+        
+        attachAdminEvents();
+    }
+    
+    function attachAdminEvents() {
+        document.querySelectorAll(".delFac").forEach(btn => {
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.facilities.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Fasilitas dihapus");
+            };
+        });
+        document.querySelectorAll(".delProd").forEach(btn => {
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.products.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Produk dihapus");
+            };
+        });
+        document.querySelectorAll(".delNews").forEach(btn => {
+            btn.onclick = () => { 
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                businessData.news.splice(idx, 1);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic(); 
+                showToast("✅ Berita dihapus");
+            };
+        });
     }
     
     // ========== GANTI PASSWORD ==========
@@ -1172,28 +1078,19 @@
         changePassVisible = !changePassVisible;
         section.style.display = changePassVisible ? 'block' : 'none';
     }
-    
-    async function saveNewPasswordToScript() {
-        const oldPassword = document.getElementById('oldPasswordForChange').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        if (!oldPassword) { showToast("Masukkan password lama!"); return; }
-        if (!newPassword) { showToast("Password baru tidak boleh kosong!"); return; }
-        if (newPassword.length < 4) { showToast("Password baru minimal 4 karakter!"); return; }
-        if (newPassword !== confirmPassword) { showToast("Konfirmasi password tidak cocok!"); return; }
-        showToast("🔄 Mengganti password...");
-        const result = await updatePasswordWithScript(oldPassword, newPassword);
-        if (result.success) {
-            showToast("✅ Password berhasil diubah!");
-            toggleChangePass();
-            document.getElementById('oldPasswordForChange').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('adminModal').style.display = 'none';
-            setTimeout(() => showToast("Silakan login dengan password baru Anda"), 2000);
-        } else {
-            showToast("❌ Gagal: " + (result.message || "Password lama salah"));
-        }
+    function saveNewPassword() {
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+        if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
+        if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
+        ADMIN_PASSWORD = newPass;
+        localStorage.setItem('adminPassword', newPass);
+        showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
+        toggleChangePass();
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        document.getElementById('adminModal').style.display = 'none';
+        setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
     }
     
     // ========== EVENT LISTENERS ==========
@@ -1206,44 +1103,28 @@
         });
     }
     
-    document.getElementById('adminPanelBtn').onclick = () => {
-        document.getElementById('adminModal').style.display = 'flex';
-        document.getElementById('adminAuthSection').style.display = 'block';
-        document.getElementById('adminPanelContent').style.display = 'none';
-        document.getElementById('adminPassword').value = '';
-    };
+    document.getElementById('adminPanelBtn').onclick = () => document.getElementById('adminModal').style.display = 'flex';
     document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').style.display = 'none';
     
     const forgotOrChangeLink = document.getElementById('forgotOrChangeLink');
     if (forgotOrChangeLink) forgotOrChangeLink.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
     const changePassFromInside = document.getElementById('changePassFromInside');
     if (changePassFromInside) changePassFromInside.onclick = (e) => { e.preventDefault(); toggleChangePass(); };
-    document.getElementById('saveNewPasswordBtn').onclick = saveNewPasswordToScript;
+    document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
     document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
     
-    // VERIFIKASI ADMIN
-    document.getElementById('verifyAdminBtn').onclick = async () => {
+    document.getElementById('verifyAdminBtn').onclick = () => {
         const inputPass = document.getElementById('adminPassword').value;
-        if (!inputPass) { alert("Masukkan password!"); return; }
-        showToast("🔐 Memverifikasi...");
-        const isValid = await verifyPasswordWithScript(inputPass);
-        if(isValid) {
+        if(inputPass === ADMIN_PASSWORD) {
             document.getElementById('adminAuthSection').style.display = 'none';
             document.getElementById('adminPanelContent').style.display = 'block';
             renderAdminLists();
-            showToast("✅ Login berhasil!");
-            const status = await checkPasswordStatus();
-            if(status.isDefault) {
-                showToast("⚠️ Peringatan: Anda masih menggunakan password default! Segera ganti password.");
-            }
         } else {
-            alert("❌ Password salah!");
-            showToast("❌ Password salah");
+            alert("Password salah!");
         }
-        document.getElementById('adminPassword').value = '';
     };
     
-    // TAMBAH FASILITAS
+    // TOMBOL ADMIN
     document.getElementById('addFacilityBtn').onclick = () => {
         let name = document.getElementById('newFacilityName').value.trim();
         let file = document.getElementById('newFacilityPhoto').files[0];
@@ -1255,16 +1136,15 @@
                 document.getElementById('newFacilityName').value = '';
                 document.getElementById('newFacilityPhoto').value = '';
                 showToast("✅ Fasilitas ditambahkan");
-            }, 150);
+            });
         } else {
-            businessData.facilities.push({ name: name, photoUrl: "" });
+            businessData.facilities.push({ name: name });
             renderAdminLists(); saveToDrive(); renderPublic();
             document.getElementById('newFacilityName').value = '';
             showToast("✅ Fasilitas ditambahkan");
         }
     };
     
-    // TAMBAH PRODUK
     document.getElementById('addProductBtn').onclick = () => {
         let name = document.getElementById('newProductName').value.trim();
         let price = document.getElementById('newProductPrice').value;
@@ -1278,9 +1158,9 @@
                 document.getElementById('newProductPrice').value = '';
                 document.getElementById('newProductPhoto').value = '';
                 showToast("✅ Produk ditambahkan");
-            }, 150);
+            });
         } else {
-            businessData.products.push({ name: name, price: price, photoUrl: "" });
+            businessData.products.push({ name: name, price: price });
             renderAdminLists(); saveToDrive(); renderPublic();
             document.getElementById('newProductName').value = '';
             document.getElementById('newProductPrice').value = '';
@@ -1288,7 +1168,6 @@
         }
     };
     
-    // TAMBAH BERITA
     document.getElementById('addNewsBtn').onclick = () => {
         let title = document.getElementById('newNewsTitle').value.trim();
         let content = document.getElementById('newNewsContent').value.trim();
@@ -1304,7 +1183,7 @@
                 document.getElementById('newNewsContent').value = '';
                 document.getElementById('newNewsImage').value = '';
                 showToast("✅ Berita ditambahkan dengan gambar");
-            }, 200);
+            });
         } else {
             businessData.news = [newNews, ...businessData.news];
             renderAdminLists(); saveToDrive(); renderPublic();
@@ -1314,7 +1193,6 @@
         }
     };
     
-    // UPLOAD FOTO PEMILIK
     document.getElementById('uploadOwnerPhoto').onchange = (e) => {
         let file = e.target.files[0];
         if(file) {
@@ -1323,7 +1201,7 @@
                 document.getElementById('previewOwnerPhoto').innerHTML = `<img src="${compressed}" class="preview-img">`;
                 saveToDrive(); renderPublic();
                 showToast("✅ Foto profil diperbarui");
-            }, 100);
+            });
         }
     };
     
@@ -1382,11 +1260,3 @@
 </script>
 </body>
 </html>
-HTMLEOF
-echo "File created: $(wc -c < /home/claude/toko_fixed.html) bytes"
-Output
-
-
-
-
-
