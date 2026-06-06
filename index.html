@@ -624,6 +624,9 @@
     const STORAGE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
+    // Flag untuk mencegah reload menimpa perubahan yang sedang disimpan
+    let isSaving = false;
+    
     let businessData = {
         owner: { name: "", phone: "", email: "", address: "", photoUrl: "" },
         facilities: [],
@@ -838,9 +841,8 @@
     }
 
     // ========== COMPRESS GAMBAR ==========
-    // PERBAIKAN: maxSizeKB ditambahkan agar Base64 tidak terlalu besar untuk dikirim ke Google Apps Script
     function compressImage(file, maxWidth, callback, maxSizeKB) {
-        maxSizeKB = maxSizeKB || 200; // default max 200KB
+        maxSizeKB = maxSizeKB || 200;
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
@@ -856,10 +858,8 @@
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                // Mulai dari quality 0.7, kurangi jika masih terlalu besar
                 let quality = 0.7;
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
-                // Kurangi quality sampai ukuran di bawah maxSizeKB
                 while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.1) {
                     quality -= 0.1;
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -914,8 +914,12 @@
     
     // ========== LOAD DATA ==========
     async function loadData() {
+        // FIX: Jangan reload jika sedang proses simpan
+        if (isSaving) {
+            console.log("Skipping loadData karena sedang menyimpan");
+            return;
+        }
         try {
-            // PERBAIKAN: Tambah timeout agar tidak stuck loading selamanya
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 15000);
             const res = await fetch(`${STORAGE_SCRIPT_URL}?t=${Date.now()}`, { signal: controller.signal });
@@ -950,22 +954,19 @@
     }
     
     // ========== SIMPAN DATA ==========
-    // PERBAIKAN UTAMA: Ganti mode "no-cors" ke cara yang benar untuk Google Apps Script
-    // Google Apps Script memerlukan request dikirim sebagai GET dengan parameter JSON yang di-encode
-    // atau menggunakan form POST. Mode "no-cors" membuat response tidak bisa dibaca dan
-    // seringkali gagal tanpa error yang jelas.
+    // FIX UTAMA: saveToDrive TIDAK memanggil loadData() setelah simpan.
+    // Ini mencegah data lama dari server menimpa perubahan (delete) yang baru dilakukan.
+    // Render ulang dilakukan langsung dari businessData lokal yang sudah diubah.
     async function saveToDrive() {
-        // Buat salinan data tanpa field internal (_notified, dll)
+        // Buat salinan data tanpa field internal
         let dataToSend = JSON.parse(JSON.stringify(businessData));
-        // Bersihkan field internal yang tidak perlu disimpan
         if(dataToSend.facilities) dataToSend.facilities.forEach(f => { delete f._notified; });
         if(dataToSend.products) dataToSend.products.forEach(p => { delete p._notified; });
         if(dataToSend.news) dataToSend.news.forEach(n => { delete n._notified; });
         
+        isSaving = true;
         try {
             showToast("💾 Menyimpan data...");
-            // PERBAIKAN: Kirim via form POST menggunakan URLSearchParams
-            // Cara ini kompatibel dengan Google Apps Script dan menghindari CORS preflight
             const formData = new URLSearchParams();
             formData.append('data', JSON.stringify({ data: dataToSend }));
             
@@ -975,20 +976,18 @@
                 body: formData.toString()
             });
             
-            // Google Apps Script kadang redirect, coba baca response jika bisa
             let saved = false;
             try {
                 const result = await response.json();
                 saved = result.status === "success" || result.success === true;
             } catch(jsonErr) {
-                // Jika response bukan JSON (misal karena redirect), anggap berhasil jika status OK
                 saved = response.ok || response.status === 0 || response.type === 'opaque';
             }
             
             if(saved) {
                 showToast("✅ Data tersimpan");
             } else {
-                // Fallback: coba dengan no-cors jika cara di atas gagal
+                // Fallback no-cors
                 await fetch(STORAGE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
@@ -997,11 +996,13 @@
                 });
                 showToast("✅ Data tersimpan (mode fallback)");
             }
-            // Reload data setelah simpan untuk memastikan tampilan update
-            setTimeout(() => loadData(), 1500);
+            // FIX: TIDAK memanggil loadData() di sini agar data yg sudah didelete tidak kembali muncul
         } catch(e) { 
             console.error("Save error:", e);
             showToast("❌ Gagal simpan: " + e.message);
+        } finally {
+            // Lepas flag setelah 3 detik untuk keamanan
+            setTimeout(() => { isSaving = false; }, 3000);
         }
     }
     
@@ -1071,64 +1072,97 @@
         const adminFacDiv = document.getElementById('adminFacilitiesList');
         if(adminFacDiv) {
             adminFacDiv.innerHTML = "<strong>Fasilitas:</strong>";
-            if(businessData.facilities.length === 0) adminFacDiv.innerHTML += "<em>Belum ada fasilitas</em>";
-            businessData.facilities.forEach((f,i) => {
-                adminFacDiv.innerHTML += `<div class="admin-list-item">📌 ${escapeHtml(f.name)} <button class="delFac" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;">Hapus</button></div>`;
+            if(businessData.facilities.length === 0) {
+                adminFacDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada fasilitas</em></div>";
+            }
+            // FIX: Render dengan data-id unik agar index tidak salah
+            businessData.facilities.forEach((f, i) => {
+                const item = document.createElement('div');
+                item.className = 'admin-list-item';
+                item.innerHTML = `<span>📌 ${escapeHtml(f.name)}</span>`;
+                const btn = document.createElement('button');
+                btn.textContent = 'Hapus';
+                btn.style.cssText = 'background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
+                btn.onclick = function() {
+                    if(!confirm(`Hapus fasilitas "${f.name}"?`)) return;
+                    // FIX: Hapus berdasarkan index saat ini, bukan index lama
+                    const currentIdx = businessData.facilities.indexOf(f);
+                    if(currentIdx !== -1) {
+                        businessData.facilities.splice(currentIdx, 1);
+                        renderAdminLists();
+                        renderPublic();
+                        saveToDrive();
+                        showToast("✅ Fasilitas dihapus");
+                    }
+                };
+                item.appendChild(btn);
+                adminFacDiv.appendChild(item);
             });
         }
+
         const adminProdDiv = document.getElementById('adminProductsList');
         if(adminProdDiv) {
             adminProdDiv.innerHTML = "<strong>Produk:</strong>";
-            if(businessData.products.length === 0) adminProdDiv.innerHTML += "<em>Belum ada produk</em>";
-            businessData.products.forEach((p,i) => {
-                adminProdDiv.innerHTML += `<div class="admin-list-item">🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)} <button class="delProd" data-idx="${i}" style="background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;">Hapus</button></div>`;
+            if(businessData.products.length === 0) {
+                adminProdDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada produk</em></div>";
+            }
+            businessData.products.forEach((p, i) => {
+                const item = document.createElement('div');
+                item.className = 'admin-list-item';
+                item.innerHTML = `<span>🧱 ${escapeHtml(p.name)} - ${escapeHtml(p.price)}</span>`;
+                const btn = document.createElement('button');
+                btn.textContent = 'Hapus';
+                btn.style.cssText = 'background:#b35f2a; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
+                btn.onclick = function() {
+                    if(!confirm(`Hapus produk "${p.name}"?`)) return;
+                    const currentIdx = businessData.products.indexOf(p);
+                    if(currentIdx !== -1) {
+                        businessData.products.splice(currentIdx, 1);
+                        renderAdminLists();
+                        renderPublic();
+                        saveToDrive();
+                        showToast("✅ Produk dihapus");
+                    }
+                };
+                item.appendChild(btn);
+                adminProdDiv.appendChild(item);
             });
         }
+
         const adminNewsDiv = document.getElementById('adminNewsList');
         if(adminNewsDiv) {
             adminNewsDiv.innerHTML = "<strong>Berita:</strong>";
-            if(businessData.news.length === 0) adminNewsDiv.innerHTML += "<em>Belum ada berita</em>";
-            businessData.news.forEach((n,i) => {
-                adminNewsDiv.innerHTML += `<div class="admin-list-item">📰 ${escapeHtml(n.title)} <button class="delNews" data-idx="${i}" style="background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;">Hapus</button></div>`;
+            if(businessData.news.length === 0) {
+                adminNewsDiv.innerHTML += "<div style='color:#888; font-size:0.85rem; padding:5px 0;'><em>Belum ada berita</em></div>";
+            }
+            businessData.news.forEach((n, i) => {
+                const item = document.createElement('div');
+                item.className = 'admin-list-item';
+                item.innerHTML = `<span>📰 ${escapeHtml(n.title)}</span>`;
+                const btn = document.createElement('button');
+                btn.textContent = 'Hapus';
+                btn.style.cssText = 'background:#c62828; border:none; border-radius:1rem; padding:4px 12px; color:white; cursor:pointer;';
+                btn.onclick = function() {
+                    if(!confirm(`Hapus berita "${n.title}"?`)) return;
+                    const currentIdx = businessData.news.indexOf(n);
+                    if(currentIdx !== -1) {
+                        businessData.news.splice(currentIdx, 1);
+                        renderAdminLists();
+                        renderPublic();
+                        saveToDrive();
+                        showToast("✅ Berita dihapus");
+                    }
+                };
+                item.appendChild(btn);
+                adminNewsDiv.appendChild(item);
             });
         }
+
         document.getElementById('editOwnerName').value = businessData.owner.name || "";
         document.getElementById('editOwnerPhone').value = businessData.owner.phone || "";
         document.getElementById('editOwnerEmail').value = businessData.owner.email || "";
         document.getElementById('editOwnerAddress').value = businessData.owner.address || "";
         document.getElementById('editRunningText').value = businessData.runningText || "";
-        
-        attachAdminEvents();
-    }
-    
-    function attachAdminEvents() {
-        document.querySelectorAll(".delFac").forEach(btn => {
-            btn.onclick = () => { 
-                if(!confirm("Hapus fasilitas ini?")) return;
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.facilities.splice(idx, 1);
-                renderAdminLists(); saveToDrive(); renderPublic(); 
-                showToast("✅ Fasilitas dihapus");
-            };
-        });
-        document.querySelectorAll(".delProd").forEach(btn => {
-            btn.onclick = () => { 
-                if(!confirm("Hapus produk ini?")) return;
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.products.splice(idx, 1);
-                renderAdminLists(); saveToDrive(); renderPublic(); 
-                showToast("✅ Produk dihapus");
-            };
-        });
-        document.querySelectorAll(".delNews").forEach(btn => {
-            btn.onclick = () => { 
-                if(!confirm("Hapus berita ini?")) return;
-                const idx = parseInt(btn.getAttribute('data-idx'));
-                businessData.news.splice(idx, 1);
-                renderAdminLists(); saveToDrive(); renderPublic(); 
-                showToast("✅ Berita dihapus");
-            };
-        });
     }
     
     // ========== GANTI PASSWORD ==========
@@ -1215,7 +1249,6 @@
         let file = document.getElementById('newFacilityPhoto').files[0];
         if(!name) return alert("Masukkan nama fasilitas");
         if(file) {
-            // PERBAIKAN: maxWidth 400px, maxSizeKB 150 agar tidak terlalu besar
             compressImage(file, 400, (compressed) => {
                 businessData.facilities.push({ name: name, photoUrl: compressed });
                 renderAdminLists(); saveToDrive(); renderPublic();
@@ -1238,7 +1271,6 @@
         let file = document.getElementById('newProductPhoto').files[0];
         if(!name) return alert("Nama produk harus diisi");
         if(file) {
-            // PERBAIKAN: maxWidth 400px, maxSizeKB 150
             compressImage(file, 400, (compressed) => {
                 businessData.products.push({ name: name, price: price, photoUrl: compressed });
                 renderAdminLists(); saveToDrive(); renderPublic();
@@ -1264,7 +1296,6 @@
         if(!title) return alert("Judul berita harus diisi");
         let newNews = { id: "news_" + Date.now(), title: title, content: content || "", date: new Date().toISOString(), imageUrl: "" };
         if(file) {
-            // PERBAIKAN: maxWidth 800px untuk berita, maxSizeKB 200
             compressImage(file, 800, (compressed) => {
                 newNews.imageUrl = compressed;
                 businessData.news = [newNews, ...businessData.news];
@@ -1287,7 +1318,6 @@
     document.getElementById('uploadOwnerPhoto').onchange = (e) => {
         let file = e.target.files[0];
         if(file) {
-            // PERBAIKAN: maxWidth 400px, maxSizeKB 100 untuk foto profil
             compressImage(file, 400, (compressed) => {
                 businessData.owner.photoUrl = compressed;
                 document.getElementById('previewOwnerPhoto').innerHTML = `<img src="${compressed}" class="preview-img">`;
@@ -1352,3 +1382,11 @@
 </script>
 </body>
 </html>
+HTMLEOF
+echo "File created: $(wc -c < /home/claude/toko_fixed.html) bytes"
+Output
+
+
+
+
+
