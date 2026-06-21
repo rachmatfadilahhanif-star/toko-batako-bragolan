@@ -621,12 +621,48 @@
 <script>
     // ========== KONFIGURASI ==========
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
+    const PASSWORD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbqidrTcrr62f4wYAs3IEYmRLHJI-nIxqKAzZuduwEZmm8nIbpFuRjhWvEUKseSjmH/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
     
-    let ADMIN_PASSWORD = localStorage.getItem('adminPassword');
-    if (!ADMIN_PASSWORD) {
-        ADMIN_PASSWORD = "hanif123$";
-        localStorage.setItem('adminPassword', ADMIN_PASSWORD);
+    // Password disimpan di Google Apps Script
+    let ADMIN_PASSWORD = null;
+    let isLoggedIn = false;
+
+    // Fungsi verifikasi password ke Google Apps Script
+    async function verifyAdminPassword(password) {
+        try {
+            const response = await fetch(PASSWORD_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    action: 'verify', 
+                    password: password 
+                })
+            });
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    // Fungsi ganti password
+    async function changeAdminPassword(oldPassword, newPassword) {
+        try {
+            await fetch(PASSWORD_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    action: 'changePassword',
+                    oldPassword: oldPassword,
+                    newPassword: newPassword 
+                })
+            });
+            return true;
+        } catch(e) {
+            return false;
+        }
     }
     
     let businessData = {
@@ -637,24 +673,19 @@
         runningText: "🏆 Batako Super Padat | Free Ongkir Bragolan"
     };
     
-    // ========== NOTIFIKASI (DIPERBAIKI) ==========
+    // ========== NOTIFIKASI ==========
     let notifications = [];
     let lastFacilityCount = -1;
     let lastNewsCount = -1;
-    let notifPermissionRequested = false;
     
     function requestNotificationPermission() {
-        if (!('Notification' in window)) {
-            console.log("Browser tidak mendukung notifikasi");
-            return;
-        }
+        if (!('Notification' in window)) return;
         if (Notification.permission === 'granted') return;
         if (Notification.permission === 'denied') return;
         
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                showToast("✅ Notifikasi diaktifkan! Anda akan mendapat info terbaru.");
-                // Kirim notifikasi uji coba
+                showToast("✅ Notifikasi diaktifkan!");
                 setTimeout(() => {
                     new Notification("Notifikasi Aktif!", {
                         body: "Anda akan menerima notifikasi ketika ada berita atau fasilitas baru.",
@@ -811,7 +842,6 @@
                 loadingScreen.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
-                // Tampilkan popup minta izin notifikasi setelah konten dimuat
                 setTimeout(() => {
                     if (Notification && Notification.permission === 'default') {
                         const result = confirm("🔔 Aktifkan notifikasi untuk mendapatkan info terbaru tentang promo dan berita?");
@@ -853,7 +883,7 @@
         setTimeout(() => toast.remove(), 3000);
     }
     
-    // ========== ZOOM GAMBAR (DIPERBAIKI) ==========
+    // ========== ZOOM GAMBAR ==========
     function openZoomModal(imageUrl) {
         const modal = document.getElementById('zoomModal');
         const zoomImg = document.getElementById('zoomImage');
@@ -884,6 +914,7 @@
         document.body.style.overflow = 'auto';
     }
     
+    // ========== LOAD & SAVE DATA ==========
     async function loadData() {
         try {
             const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
@@ -918,27 +949,30 @@
     }
     
     async function saveToDrive() {
-        let dataToSend = JSON.parse(JSON.stringify(businessData));
-        if(dataToSend.owner) delete dataToSend.owner.photoBase64;
-        if(dataToSend.facilities) dataToSend.facilities.forEach(f => delete f.photoBase64);
-        if(dataToSend.products) dataToSend.products.forEach(p => delete p.photoBase64);
-        if(dataToSend.news) dataToSend.news.forEach(n => delete n.imageBase64);
-        
         try {
             showToast("💾 Menyimpan data...");
+            
+            // Kirim data ke Google Apps Script
             await fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: ADMIN_PASSWORD, data: dataToSend })
+                body: JSON.stringify({ 
+                    password: document.getElementById('adminPassword').value || 'hanif123$',
+                    data: businessData 
+                })
             });
+            
             showToast("✅ Data tersimpan");
-            setTimeout(() => loadData(), 1000);
+            
+            // Reload data setelah save
+            setTimeout(() => loadData(), 1500);
         } catch(e) { 
             showToast("❌ Gagal simpan: " + e.message);
         }
     }
     
+    // ========== RENDER PUBLIC ==========
     function renderPublic() {
         document.getElementById("ownerNameSpan").innerText = businessData.owner.name || "Belum diisi";
         document.getElementById("ownerPhoneSpan").innerText = businessData.owner.phone || "-";
@@ -951,7 +985,7 @@
         }
         document.getElementById("runningTextMarquee").innerHTML = businessData.runningText;
         
-        // FASILITAS - dengan ZOOM
+        // FASILITAS
         const facilitiesDiv = document.getElementById("facilitiesList");
         facilitiesDiv.innerHTML = "";
         if(businessData.facilities && businessData.facilities.length > 0) {
@@ -967,7 +1001,7 @@
             facilitiesDiv.innerHTML = "<div class='empty-state'>Belum ada fasilitas</div>";
         }
         
-        // PRODUK - dengan ZOOM
+        // PRODUK
         const productsDiv = document.getElementById("productsList");
         productsDiv.innerHTML = "";
         if(businessData.products && businessData.products.length > 0) {
@@ -983,7 +1017,7 @@
             productsDiv.innerHTML = "<div class='empty-state'>Belum ada produk</div>";
         }
         
-        // BERITA - dengan ZOOM pada gambar
+        // BERITA
         const newsDiv = document.getElementById("newsList");
         newsDiv.innerHTML = "";
         if(businessData.news && businessData.news.length > 0) {
@@ -1078,19 +1112,25 @@
         changePassVisible = !changePassVisible;
         section.style.display = changePassVisible ? 'block' : 'none';
     }
-    function saveNewPassword() {
+    
+    async function saveNewPassword() {
         const newPass = document.getElementById('newPassword').value;
         const confirmPass = document.getElementById('confirmPassword').value;
         if (!newPass) { showToast("Password baru tidak boleh kosong"); return; }
         if (newPass !== confirmPass) { showToast("Konfirmasi password tidak cocok"); return; }
-        ADMIN_PASSWORD = newPass;
-        localStorage.setItem('adminPassword', newPass);
-        showToast("✅ Password berhasil diubah! Gunakan password baru untuk login berikutnya.");
-        toggleChangePass();
-        document.getElementById('newPassword').value = '';
-        document.getElementById('confirmPassword').value = '';
-        document.getElementById('adminModal').style.display = 'none';
-        setTimeout(() => showToast("Silakan login kembali dengan password baru Anda"), 1000);
+        
+        const oldPass = document.getElementById('adminPassword').value;
+        const success = await changeAdminPassword(oldPass, newPass);
+        if (success) {
+            showToast("✅ Password berhasil diubah!");
+            toggleChangePass();
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('adminModal').style.display = 'none';
+            setTimeout(() => showToast("Silakan login kembali dengan password baru"), 1000);
+        } else {
+            showToast("❌ Gagal mengubah password.");
+        }
     }
     
     // ========== EVENT LISTENERS ==========
@@ -1113,105 +1153,143 @@
     document.getElementById('saveNewPasswordBtn').onclick = saveNewPassword;
     document.getElementById('cancelChangePassBtn').onclick = () => toggleChangePass();
     
-    document.getElementById('verifyAdminBtn').onclick = () => {
+    document.getElementById('verifyAdminBtn').onclick = async () => {
         const inputPass = document.getElementById('adminPassword').value;
-        if(inputPass === ADMIN_PASSWORD) {
+        const isValid = await verifyAdminPassword(inputPass);
+        if(isValid) {
+            isLoggedIn = true;
             document.getElementById('adminAuthSection').style.display = 'none';
             document.getElementById('adminPanelContent').style.display = 'block';
             renderAdminLists();
+            showToast("✅ Login berhasil");
         } else {
-            alert("Password salah!");
+            alert("❌ Password salah!");
         }
     };
     
-    // TOMBOL ADMIN
+    // ========== TOMBOL ADMIN - DIPERBAIKI ==========
+    // Tambah Fasilitas
     document.getElementById('addFacilityBtn').onclick = () => {
         let name = document.getElementById('newFacilityName').value.trim();
         let file = document.getElementById('newFacilityPhoto').files[0];
-        if(!name) return alert("Masukkan nama fasilitas");
+        if(!name) { showToast("Masukkan nama fasilitas"); return; }
+        
+        const newFacility = { name: name };
+        
         if(file) {
             compressImage(file, 400, (compressed) => {
-                businessData.facilities.push({ name: name, photoUrl: compressed });
-                renderAdminLists(); saveToDrive(); renderPublic();
+                newFacility.photoUrl = compressed;
+                businessData.facilities.push(newFacility);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic();
                 document.getElementById('newFacilityName').value = '';
                 document.getElementById('newFacilityPhoto').value = '';
                 showToast("✅ Fasilitas ditambahkan");
             });
         } else {
-            businessData.facilities.push({ name: name });
-            renderAdminLists(); saveToDrive(); renderPublic();
+            businessData.facilities.push(newFacility);
+            renderAdminLists(); 
+            saveToDrive(); 
+            renderPublic();
             document.getElementById('newFacilityName').value = '';
             showToast("✅ Fasilitas ditambahkan");
         }
     };
     
+    // Tambah Produk
     document.getElementById('addProductBtn').onclick = () => {
         let name = document.getElementById('newProductName').value.trim();
         let price = document.getElementById('newProductPrice').value;
         let file = document.getElementById('newProductPhoto').files[0];
-        if(!name) return alert("Nama produk harus diisi");
+        if(!name) { showToast("Nama produk harus diisi"); return; }
+        
+        const newProduct = { name: name, price: price };
+        
         if(file) {
             compressImage(file, 400, (compressed) => {
-                businessData.products.push({ name: name, price: price, photoUrl: compressed });
-                renderAdminLists(); saveToDrive(); renderPublic();
+                newProduct.photoUrl = compressed;
+                businessData.products.push(newProduct);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic();
                 document.getElementById('newProductName').value = '';
                 document.getElementById('newProductPrice').value = '';
                 document.getElementById('newProductPhoto').value = '';
                 showToast("✅ Produk ditambahkan");
             });
         } else {
-            businessData.products.push({ name: name, price: price });
-            renderAdminLists(); saveToDrive(); renderPublic();
+            businessData.products.push(newProduct);
+            renderAdminLists(); 
+            saveToDrive(); 
+            renderPublic();
             document.getElementById('newProductName').value = '';
             document.getElementById('newProductPrice').value = '';
             showToast("✅ Produk ditambahkan");
         }
     };
     
+    // Tambah Berita
     document.getElementById('addNewsBtn').onclick = () => {
         let title = document.getElementById('newNewsTitle').value.trim();
         let content = document.getElementById('newNewsContent').value.trim();
         let file = document.getElementById('newNewsImage').files[0];
-        if(!title) return alert("Judul berita harus diisi");
-        let newNews = { id: "news_" + Date.now(), title: title, content: content || "", date: new Date().toISOString(), imageUrl: "" };
+        if(!title) { showToast("Judul berita harus diisi"); return; }
+        
+        const newNews = { 
+            id: "news_" + Date.now(), 
+            title: title, 
+            content: content || "", 
+            date: new Date().toISOString(), 
+            imageUrl: "" 
+        };
+        
         if(file) {
             compressImage(file, 800, (compressed) => {
                 newNews.imageUrl = compressed;
-                businessData.news = [newNews, ...businessData.news];
-                renderAdminLists(); saveToDrive(); renderPublic();
+                businessData.news.unshift(newNews);
+                renderAdminLists(); 
+                saveToDrive(); 
+                renderPublic();
                 document.getElementById('newNewsTitle').value = '';
                 document.getElementById('newNewsContent').value = '';
                 document.getElementById('newNewsImage').value = '';
                 showToast("✅ Berita ditambahkan dengan gambar");
             });
         } else {
-            businessData.news = [newNews, ...businessData.news];
-            renderAdminLists(); saveToDrive(); renderPublic();
+            businessData.news.unshift(newNews);
+            renderAdminLists(); 
+            saveToDrive(); 
+            renderPublic();
             document.getElementById('newNewsTitle').value = '';
             document.getElementById('newNewsContent').value = '';
             showToast("✅ Berita ditambahkan");
         }
     };
     
+    // Upload Foto Profil
     document.getElementById('uploadOwnerPhoto').onchange = (e) => {
         let file = e.target.files[0];
         if(file) {
             compressImage(file, 400, (compressed) => {
                 businessData.owner.photoUrl = compressed;
                 document.getElementById('previewOwnerPhoto').innerHTML = `<img src="${compressed}" class="preview-img">`;
-                saveToDrive(); renderPublic();
+                saveToDrive(); 
+                renderPublic();
                 showToast("✅ Foto profil diperbarui");
             });
         }
     };
     
+    // Simpan Semua Data
     document.getElementById('saveAllDataBtn').onclick = () => {
         businessData.owner.name = document.getElementById('editOwnerName').value;
         businessData.owner.phone = document.getElementById('editOwnerPhone').value;
         businessData.owner.email = document.getElementById('editOwnerEmail').value;
         businessData.owner.address = document.getElementById('editOwnerAddress').value;
         businessData.runningText = document.getElementById('editRunningText').value;
-        saveToDrive(); renderPublic();
+        saveToDrive(); 
+        renderPublic();
         showToast("✅ Semua data disimpan");
     };
     
@@ -1219,6 +1297,7 @@
     document.getElementById('whatsappBtn').onclick = () => { let phone = businessData.owner.phone?.replace(/\D/g,''); if(phone) window.open(`https://wa.me/${phone}`); else alert("Nomor WA belum diisi"); };
     document.getElementById('facebookBtn').onclick = () => { window.open(FB_URL, '_blank'); };
     
+    // Pencarian
     document.getElementById('searchBtn').onclick = () => {
         let kw = document.getElementById('searchInput').value.trim().toLowerCase();
         if(!kw) { location.reload(); return; }
