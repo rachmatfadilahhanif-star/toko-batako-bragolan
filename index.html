@@ -7,6 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* Pengamanan Tambahan: Mencegah seleksi teks dan klik/drag gambar */
+        body {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        input, textarea {
+            -webkit-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        img {
+            pointer-events: none;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -202,6 +217,7 @@
             border: 3px solid #d9a13b;
             background: #e8dccc;
             cursor: pointer;
+            pointer-events: auto !important; /* Agar tetap bisa diklik untuk zoom */
         }
         .info-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
         .info-icon {
@@ -233,6 +249,7 @@
             margin-bottom: 0.7rem;
             background: #e8dccc;
             cursor: pointer;
+            pointer-events: auto !important;
         }
         .item-name { font-weight: 600; font-size: 1rem; margin: 0.5rem 0 0.2rem; }
         .item-price { color: #d9a13b; font-weight: bold; font-size: 0.95rem; margin-top: 5px; }
@@ -254,6 +271,7 @@
             border-radius: 0.8rem;
             background: #e8dccc;
             cursor: pointer;
+            pointer-events: auto !important;
         }
         .news-title { font-size: 1.2rem; font-weight: 700; color: #5c3e2b; margin: 0.7rem 0 0.3rem; }
         .news-meta { font-size: 0.8rem; color: #999; margin-bottom: 0.5rem; }
@@ -373,7 +391,7 @@
             z-index: 3000;
             cursor: pointer;
         }
-        .zoom-modal img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 0.5rem; }
+        .zoom-modal img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 0.5rem; pointer-events: auto !important; }
         .zoom-close {
             position: absolute;
             top: 20px;
@@ -639,6 +657,35 @@
 </div>
 
 <script>
+    // --- SKRIP PENGAMANAN TINGKAT TINGGI (ANTI KLIK KANAN & INSPECT ELEMENT) ---
+    // 1. Mencegah Klik Kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // 2. Mencegah Tombol Pintasan (F12, Ctrl+U, Ctrl+Shift+I, dsb)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // 3. Mencegah Drag and Drop Gambar
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+    // --- AKHIR SKRIP PENGAMANAN ---
+
     const PASSWORD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAacyFETuASUpU2vQLhIY3jTJZZAWdDuXJG3LRg6uOWTDqZSkcA3xPGNZj8QgYRDsZ/exec";
     const STORAGE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTZZCCADD39UiIBWdBcUsC7DthKuyzyIO01KLSN2QptsTCbyhM-rJzT2aS7Xz240rJ/exec";
     const FB_URL = "https://www.facebook.com/profile.php?id=61585289540901";
