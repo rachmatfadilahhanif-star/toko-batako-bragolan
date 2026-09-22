@@ -70,6 +70,17 @@
         }
         .loading-text { font-size: 1.2rem; color: #5c3e2b; font-weight: 500; }
         .loading-subtext { font-size: 0.85rem; color: #888; margin-top: 0.5rem; }
+        .retry-btn {
+            display: none;
+            margin-top: 1rem;
+            background: #5c3e2b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
         
         .navbar {
             background: #5c3e2b;
@@ -439,9 +450,10 @@
 
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">⏳ Memuat data...</div>
-        <div class="loading-subtext">Mohon tunggu sebentar</div>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        <div class="loading-text" id="loadingText">⏳ Memuat data...</div>
+        <div class="loading-subtext" id="loadingSubtext">Mohon tunggu sebentar</div>
+        <button id="retryBtn" class="retry-btn" onclick="retryLoadData()">Coba Lagi</button>
     </div>
 </div>
 
@@ -640,7 +652,6 @@
     };
 
     let isSaving = false;
-    let pendingSave = false;
 
     async function verifyPasswordWithScript(password) {
         try {
@@ -844,6 +855,35 @@
         }
     }
 
+    function showLoadingRetryState() {
+        const spinner = document.getElementById('loadingSpinner');
+        const text = document.getElementById('loadingText');
+        const subtext = document.getElementById('loadingSubtext');
+        const retryBtn = document.getElementById('retryBtn');
+        
+        if (spinner) spinner.style.display = 'none';
+        if (text) text.innerHTML = "⚠️ Gagal memuat data";
+        if (subtext) subtext.innerHTML = "Periksa koneksi internet Anda atau coba lagi";
+        if (retryBtn) retryBtn.style.display = 'inline-block';
+    }
+
+    function resetLoadingStateForRetry() {
+        const spinner = document.getElementById('loadingSpinner');
+        const text = document.getElementById('loadingText');
+        const subtext = document.getElementById('loadingSubtext');
+        const retryBtn = document.getElementById('retryBtn');
+        
+        if (spinner) spinner.style.display = 'block';
+        if (text) text.innerHTML = "🔄 Memuat ulang...";
+        if (subtext) subtext.innerHTML = "Menghubungkan kembali ke server...";
+        if (retryBtn) retryBtn.style.display = 'none';
+    }
+
+    function retryLoadData() {
+        resetLoadingStateForRetry();
+        loadData();
+    }
+
     function compressImage(file, maxWidth, callback, maxSizeKB) {
         maxSizeKB = maxSizeKB || 200;
         const reader = new FileReader();
@@ -921,7 +961,7 @@
         }
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 15000);
+            const timeout = setTimeout(() => controller.abort(), 12000);
             const res = await fetch(`${STORAGE_SCRIPT_URL}?t=${Date.now()}`, { signal: controller.signal });
             clearTimeout(timeout);
             const result = await res.json();
@@ -941,14 +981,11 @@
                 hideLoadingAndShowContent();
                 showToast("✅ Data berhasil dimuat");
             } else {
-                renderPublic();
-                hideLoadingAndShowContent();
+                throw new Error("Format data tidak valid");
             }
         } catch(e) {
             console.error("Load error:", e);
-            renderPublic();
-            hideLoadingAndShowContent();
-            showToast("⚠️ Menggunakan data lokal");
+            showLoadingRetryState();
         }
         updateJamOperasional();
     }
@@ -1021,7 +1058,7 @@
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify({ data: dataToSend })
             });
-            showToast("✅ Data dikirim (tidak bisa verifikasi)");
+            showToast("✅ Data dikirim");
         } catch(e3) {
             console.error("Semua metode gagal:", e3);
             showToast("❌ Gagal simpan: " + e3.message);
@@ -1381,6 +1418,7 @@
     window.closeNewsDetail = closeNewsDetail;
     window.closeZoomModal = closeZoomModal;
     window.openNewsDetail = openNewsDetail;
+    window.retryLoadData = retryLoadData;
     
     loadNotifications();
     loadData();
