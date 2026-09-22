@@ -182,13 +182,6 @@
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.2rem; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
         
-        /* PERBAIKAN: Grid Khusus Berita agar tersusun rapi berbentuk kartu berdampingan */
-        .grid-news { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 1.5rem; 
-        }
-
         .profile-wrapper { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; }
         .owner-photo {
             width: 100px;
@@ -233,46 +226,41 @@
         .item-name { font-weight: 600; font-size: 1rem; margin: 0.5rem 0 0.2rem; }
         .item-price { color: #d9a13b; font-weight: bold; font-size: 0.95rem; margin-top: 5px; }
         
-        /* PERBAIKAN: Desain Kartu Berita yang Rapih & Elegan */
         .news-card {
             background: #fef8ef;
             border-radius: 1rem;
             padding: 1rem;
+            margin-bottom: 1rem;
             border: 1px solid #f0e4d0;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
-        .news-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #fff5e8; }
+        .news-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); background: #fff5e8; }
         .news-img {
             width: 100%;
-            height: 160px;
+            height: 180px;
             object-fit: cover;
             border-radius: 0.8rem;
             background: #e8dccc;
             cursor: pointer;
-            margin-bottom: 0.8rem;
         }
-        .news-title { font-size: 1.1rem; font-weight: 700; color: #5c3e2b; margin-bottom: 0.4rem; line-height: 1.4; }
-        .news-meta { font-size: 0.75rem; color: #999; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 5px; }
+        .news-title { font-size: 1.2rem; font-weight: 700; color: #5c3e2b; margin: 0.7rem 0 0.3rem; }
+        .news-meta { font-size: 0.8rem; color: #999; margin-bottom: 0.5rem; }
         .news-content { 
-            font-size: 0.9rem; 
+            font-size: 0.95rem; 
             color: #4a3a2a; 
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 0.8rem;
         }
         .read-more {
             color: #d9a13b;
             font-size: 0.85rem;
+            margin-top: 0.5rem;
             display: inline-block;
-            font-weight: 600;
-            margin-top: auto;
+            font-weight: 500;
         }
         
         .modal {
@@ -359,7 +347,7 @@
         .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d9a13b; }
         .hours-table td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
         .hours-table td:first-child { font-weight: 600; width: 90px; }
-        .empty-state { text-align: center; padding: 2rem; color: #888; font-size: 0.95rem; grid-column: 1 / -1; }
+        .empty-state { text-align: center; padding: 2rem; color: #888; font-size: 0.95rem; }
         
         .zoom-modal {
             display: none;
@@ -439,8 +427,8 @@
             .profile-wrapper { flex-direction: column; text-align: center; }
             .search-box { flex-wrap: wrap; }
             .grid-3 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.8rem; }
-            .grid-news { grid-template-columns: 1fr; }
             .news-img { height: 150px; }
+            .news-title { font-size: 1rem; }
             .running-text { font-size: 0.9rem; animation-duration: 15s; }
             .digital-clock { margin-top: 0.5rem; }
             .notification-panel { width: 280px; right: 10px; }
@@ -518,15 +506,21 @@
 
     <div class="card">
         <h2><i class="fas fa-newspaper"></i> Berita & Pengumuman</h2>
-        <!-- Diubah dari penumpukan linear ke grid rapi -->
-        <div id="newsList" class="grid-news"></div>
+        <div id="newsList"></div>
     </div>
 
     <div class="card">
         <h2><i class="fas fa-map"></i> Lokasi & Jam Operasional</h2>
         <div class="grid-2">
             <div>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.8535!2d110.123456!3d-7.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7b9a2b3c4d5e6f%3A0x123456789abcdef!2sBragolan!5e0!3m2!1sid!2sid!4v1680000000000" width="100%" height="220" style="border-radius:1rem; border:0;" allowfullscreen loading="lazy"></iframe>
+                <!-- Google Maps Lokasi Toko -->
+                <p style="margin-bottom:6px; font-weight:600;"><i class="fas fa-map-marked-alt"></i> Peta Lokasi:</p>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4069.3572994880024!2d110.00733372738483!3d-7.796088817962904!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7ae9fa15f21615%3A0x93136e7d3443227!2sToko%20batako%20UD%20murah%20meriah%20Bragolan!5e1!3m2!1sen!2sid!4v1790075222210!5m2!1sen!2sid" width="100%" height="220" style="border-radius:1rem; border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                
+                <!-- Google Maps Street View -->
+                <p style="margin:12px 0 6px 0; font-weight:600;"><i class="fas fa-street-view"></i> Street View:</p>
+                <iframe src="https://www.google.com/maps/embed?pb=!4v1790076566655!6m8!1m7!1sBKnz2VWsWRuTE9gwFvPsig!2m2!1d-7.794312613299081!2d110.0065807850529!3f99.3110985549859!4f-3.229795621998136!5f0.7820865974627469" width="100%" height="220" style="border-radius:1rem; border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+
                 <p style="margin-top:8px;"><a href="https://maps.app.goo.gl/NVgQQLD65iUSYEi47" target="_blank">🗺️ Buka Maps Lengkap →</a></p>
             </div>
             <div>
@@ -646,6 +640,7 @@
     };
 
     let isSaving = false;
+    let pendingSave = false;
 
     async function verifyPasswordWithScript(password) {
         try {
@@ -920,7 +915,10 @@
     }
     
     async function loadData() {
-        if (isSaving) return;
+        if (isSaving) {
+            console.log("Sedang menyimpan, skip reload");
+            return;
+        }
         try {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 15000);
@@ -1008,7 +1006,7 @@
             }
 
             if (saved) {
-                showToast("✅ Data tersimpan");
+                showToast("✅ Data tersimpan (metode 2)");
                 isSaving = false;
                 return;
             }
@@ -1023,7 +1021,7 @@
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify({ data: dataToSend })
             });
-            showToast("✅ Data dikirim");
+            showToast("✅ Data dikirim (tidak bisa verifikasi)");
         } catch(e3) {
             console.error("Semua metode gagal:", e3);
             showToast("❌ Gagal simpan: " + e3.message);
@@ -1080,15 +1078,7 @@
             businessData.news.forEach(n => {
                 let div = document.createElement("div");
                 div.className = "news-card";
-                div.innerHTML = `
-                    <div>
-                        ${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img" loading="lazy">` : ''}
-                        <div class="news-title">📢 ${escapeHtml(n.title)}</div>
-                        <div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(n.date).toLocaleDateString('id-ID')}</div>
-                        <div class="news-content">${escapeHtml(n.content.length > 130 ? n.content.substring(0,130) + '...' : n.content)}</div>
-                    </div>
-                    <div class="read-more">Baca selengkapnya →</div>
-                `;
+                div.innerHTML = `${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img" loading="lazy">` : ''}<div class="news-title">📢 ${escapeHtml(n.title)}</div><div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(n.date).toLocaleDateString('id-ID')}</div><div class="news-content">${escapeHtml(n.content.length > 150 ? n.content.substring(0,150) + '...' : n.content)}</div><div class="read-more">Klik untuk baca selengkapnya →</div>`;
                 const img = div.querySelector('.news-img');
                 if (img) img.onclick = (e) => { e.stopPropagation(); openZoomModal(n.imageUrl); };
                 div.onclick = (e) => { if (e.target !== img) openNewsDetail(n); };
@@ -1382,19 +1372,7 @@
         
         const nDiv = document.getElementById('newsList');
         nDiv.innerHTML = "";
-        filteredNews.forEach(n => { 
-            nDiv.innerHTML += `
-                <div class="news-card" onclick='openNewsDetail(${JSON.stringify(n).replace(/'/g, "&#39;")})'>
-                    <div>
-                        ${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img">` : ''}
-                        <div class="news-title">📢 ${escapeHtml(n.title)}</div>
-                        <div class="news-meta"><i class="far fa-calendar-alt"></i> ${new Date(n.date).toLocaleDateString()}</div>
-                        <div class="news-content">${escapeHtml(n.content.length > 130 ? n.content.substring(0,130) + '...' : n.content)}</div>
-                    </div>
-                    <div class="read-more">Baca selengkapnya →</div>
-                </div>
-            `; 
-        });
+        filteredNews.forEach(n => { nDiv.innerHTML += `<div class="news-card" onclick='openNewsDetail(${JSON.stringify(n).replace(/'/g, "&#39;")})'>${n.imageUrl ? `<img src="${n.imageUrl}" class="news-img">` : ''}<div class="news-title">📢 ${escapeHtml(n.title)}</div><div class="news-meta">${new Date(n.date).toLocaleDateString()}</div><div class="news-content">${escapeHtml(n.content.length > 150 ? n.content.substring(0,150) + '...' : n.content)}</div><div class="read-more">Klik untuk baca selengkapnya →</div></div>`; });
         if(filteredNews.length === 0) nDiv.innerHTML = "<div class='empty-state'>Tidak ada berita</div>";
     };
     
